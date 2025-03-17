@@ -1,0 +1,82 @@
+package com.pragma.foodcourt.infrastructure.exceptionhandler;
+
+import com.pragma.foodcourt.application.dto.response.ExceptionResponseDto;
+import com.pragma.foodcourt.domain.exception.InvalidCellPhoneNumberException;
+import com.pragma.foodcourt.domain.exception.InvalidUserRoleException;
+import com.pragma.foodcourt.domain.exception.NonNumericNitException;
+import com.pragma.foodcourt.domain.exception.NumericNameException;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import java.sql.SQLIntegrityConstraintViolationException;
+import java.time.LocalDateTime;
+
+@RestControllerAdvice
+@Slf4j
+public class ControllerAdvisor {
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(InvalidCellPhoneNumberException.class)
+    public ExceptionResponseDto handleInvalidCellPhoneNumberException(InvalidCellPhoneNumberException e) {
+        log.error(e.getMessage());
+        return ExceptionResponseDto.builder()
+                .message(e.getMessage())
+                .timestamp(LocalDateTime.now())
+                .build();
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(InvalidUserRoleException.class)
+    public ExceptionResponseDto handleInvalidUserRoleException(InvalidUserRoleException e) {
+        log.error(e.getMessage());
+        return ExceptionResponseDto.builder()
+                .message(e.getMessage())
+                .timestamp(LocalDateTime.now())
+                .build();
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(NonNumericNitException.class)
+    public ExceptionResponseDto handleNonNumericNitException(NonNumericNitException e) {
+        log.error(e.getMessage());
+        return ExceptionResponseDto.builder()
+                .message(e.getMessage())
+                .timestamp(LocalDateTime.now())
+                .build();
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(NumericNameException.class)
+    public ExceptionResponseDto handleNumericNameException(NumericNameException e) {
+        log.error(e.getMessage());
+        return ExceptionResponseDto.builder()
+                .message(e.getMessage())
+                .timestamp(LocalDateTime.now())
+                .build();
+    }
+
+    @ResponseStatus(HttpStatus.CONFLICT)
+    @ExceptionHandler(SQLIntegrityConstraintViolationException.class)
+    public ExceptionResponseDto handleSQLIntegrityConstraintViolationException(SQLIntegrityConstraintViolationException e) {
+        log.error(e.getMessage());
+        return ExceptionResponseDto.builder()
+                .message(e.getMessage())
+                .timestamp(LocalDateTime.now())
+                .build();
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ExceptionResponseDto handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+        String message = e.getBindingResult().getAllErrors().get(0).getDefaultMessage();
+        log.error(message);
+        return ExceptionResponseDto.builder()
+                .message(message)
+                .timestamp(LocalDateTime.now())
+                .build();
+    }
+}
