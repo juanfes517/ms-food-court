@@ -1,0 +1,13 @@
+package com.pragma.foodcourt.domain.helper.constants;
+
+public class ExceptionConstants {
+
+    private ExceptionConstants() {
+    }
+
+    public static final String ONLY_OWNER_EXCEPTION_MESSAGE = "Only users with the owner role can have restaurants";
+    public static final String CELL_PHONE_NUMBER_IS_NOT_A_NUMBER_MESSAGE = "The cell phone number is not a number";
+    public static final String CELL_PHONE_NUMBER_LENGTH_EXCEPTION_MESSAGE = "The cell phone number is no valid. Must have a maximum of 13 characters";
+    public static final String NON_NUMERIC_NIT_EXCEPTION_MESSAGE = "The NIT number must only contain numerical values";
+    public static final String NUMERIC_NAME_EXCEPTION_MESSAGE = "The restaurant name should not contain only numerical values.";
+}
