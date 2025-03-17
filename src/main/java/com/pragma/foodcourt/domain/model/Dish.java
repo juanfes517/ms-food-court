@@ -17,4 +17,8 @@ public class Dish {
     private Restaurant restaurant;
     private String imageUrl;
     private boolean active;
+
+    public boolean isValidPrice() {
+        return price > 0;
+    }
 }
