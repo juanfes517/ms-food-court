@@ -17,4 +17,25 @@ public class Restaurant {
     private String nit;
     private Long ownerId;
 
+    public boolean isNumericCellPhoneNumber() {
+        String validationCellPhoneNumber = this.cellPhoneNumber;
+
+        if (validationCellPhoneNumber.charAt(0) == '+') {
+            validationCellPhoneNumber = validationCellPhoneNumber.substring(1);
+        }
+
+        return validationCellPhoneNumber.chars().allMatch(Character::isDigit);
+    }
+
+    public boolean isNumericNit() {
+        return this.nit.chars().allMatch(Character::isDigit);
+    }
+
+    public boolean isCellPhoneNumberMax13Chars () {
+        return this.cellPhoneNumber.length() <= 13;
+    }
+
+    public boolean isNameNotNumeric() {
+        return !this.name.matches("\\d+");
+    }
 }
