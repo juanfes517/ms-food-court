@@ -1,0 +1,9 @@
+package com.pragma.foodcourt.infrastructure.helper.constants;
+
+public class ExceptionConstants {
+
+    private ExceptionConstants() {}
+
+    public static final String USER_NOT_FOUND = "User Not Found";
+    public static final String GENERIC_ERROR = "Unexpected Error";
+}

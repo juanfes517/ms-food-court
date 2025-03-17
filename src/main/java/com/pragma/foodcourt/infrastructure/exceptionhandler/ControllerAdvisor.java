@@ -5,6 +5,7 @@ import com.pragma.foodcourt.domain.exception.InvalidCellPhoneNumberException;
 import com.pragma.foodcourt.domain.exception.InvalidUserRoleException;
 import com.pragma.foodcourt.domain.exception.NonNumericNitException;
 import com.pragma.foodcourt.domain.exception.NumericNameException;
+import com.pragma.foodcourt.infrastructure.exception.UserNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -76,6 +77,26 @@ public class ControllerAdvisor {
         log.error(message);
         return ExceptionResponseDto.builder()
                 .message(message)
+                .timestamp(LocalDateTime.now())
+                .build();
+    }
+
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(UserNotFoundException.class)
+    public ExceptionResponseDto handleUserNotFoundException(UserNotFoundException e) {
+        log.error(e.getMessage());
+        return ExceptionResponseDto.builder()
+                .message(e.getMessage())
+                .timestamp(LocalDateTime.now())
+                .build();
+    }
+
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler(RuntimeException.class)
+    public ExceptionResponseDto handleRuntimeException(RuntimeException e) {
+        log.error(e.getMessage());
+        return ExceptionResponseDto.builder()
+                .message(e.getMessage())
                 .timestamp(LocalDateTime.now())
                 .build();
     }
