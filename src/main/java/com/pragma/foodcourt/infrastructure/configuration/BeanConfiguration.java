@@ -1,10 +1,13 @@
 package com.pragma.foodcourt.infrastructure.configuration;
 
 import com.pragma.foodcourt.application.dto.request.RestaurantRequestDto;
+import com.pragma.foodcourt.domain.api.ICategoryServicePort;
+import com.pragma.foodcourt.domain.api.IDishServicePort;
 import com.pragma.foodcourt.domain.api.IRestaurantServicePort;
 import com.pragma.foodcourt.domain.model.Restaurant;
-import com.pragma.foodcourt.domain.spi.IRestaurantPersistencePort;
-import com.pragma.foodcourt.domain.spi.IUserExternalServicePort;
+import com.pragma.foodcourt.domain.spi.*;
+import com.pragma.foodcourt.domain.usecase.CategoryUseCase;
+import com.pragma.foodcourt.domain.usecase.DishUseCase;
 import com.pragma.foodcourt.domain.usecase.RestaurantUseCase;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
@@ -32,5 +35,15 @@ public class BeanConfiguration {
         });
 
         return modelMapper;
+    }
+
+    @Bean
+    public IDishServicePort dishService(IDishPersistencePort dishPersistencePort, IJwtServiceUtils jwtServiceUtils, IUserExternalServicePort userExternalServicePort) {
+        return new DishUseCase(dishPersistencePort, jwtServiceUtils, userExternalServicePort);
+    }
+
+    @Bean
+    public ICategoryServicePort categoryService(ICategoryPersistencePort categoryPersistencePort) {
+        return new CategoryUseCase(categoryPersistencePort);
     }
 }
