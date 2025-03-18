@@ -20,7 +20,7 @@ public class DishEntity {
     private String name;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinTable(name = "category_id")
+    @JoinColumn(name = "category_id")
     private CategoryEntity category;
 
     @Column(nullable = false)
@@ -30,7 +30,7 @@ public class DishEntity {
     private int price;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinTable(name = "restaurant_id")
+    @JoinColumn(name = "restaurant_id")
     private RestaurantEntity restaurant;
 
     @Column(nullable = false, name = "image_url")
