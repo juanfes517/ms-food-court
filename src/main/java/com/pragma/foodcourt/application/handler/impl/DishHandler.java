@@ -1,6 +1,7 @@
 package com.pragma.foodcourt.application.handler.impl;
 
 import com.pragma.foodcourt.application.dto.request.CreateDishRequestDto;
+import com.pragma.foodcourt.application.dto.request.UpdateDishRequestDto;
 import com.pragma.foodcourt.application.dto.response.DishResponseDto;
 import com.pragma.foodcourt.application.handler.IDishHandler;
 import com.pragma.foodcourt.domain.api.ICategoryServicePort;
@@ -41,5 +42,16 @@ public class DishHandler implements IDishHandler {
                 .build();
 
         return modelMapper.map(dishServicePort.saveDish(dish), DishResponseDto.class);
+    }
+
+    @Override
+    public DishResponseDto updateDish(UpdateDishRequestDto updateDishRequestDto) {
+        Long dishId = updateDishRequestDto.getDishId();
+        Integer price = updateDishRequestDto.getPrice();
+        String description = updateDishRequestDto.getDescription();
+
+        Dish updatedDish = dishServicePort.updateDish(dishId, price, description);
+
+        return modelMapper.map(updatedDish, DishResponseDto.class);
     }
 }

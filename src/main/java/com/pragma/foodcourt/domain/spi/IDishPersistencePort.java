@@ -5,4 +5,6 @@ import com.pragma.foodcourt.domain.model.Dish;
 public interface IDishPersistencePort {
 
     Dish save(Dish dish);
+
+    Dish findById(Long id);
 }

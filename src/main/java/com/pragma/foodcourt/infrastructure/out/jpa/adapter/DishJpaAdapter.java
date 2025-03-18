@@ -22,4 +22,10 @@ public class DishJpaAdapter implements IDishPersistencePort {
 
         return modelMapper.map(savedDishEntity, Dish.class);
     }
+
+    @Override
+    public Dish findById(Long id) {
+        //Todo: implement
+        return null;
+    }
 }

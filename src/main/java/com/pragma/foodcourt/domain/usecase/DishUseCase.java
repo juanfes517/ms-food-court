@@ -34,4 +34,23 @@ public class DishUseCase implements IDishServicePort {
 
         return dishPersistencePort.save(dish);
     }
+
+    @Override
+    public Dish updateDish(Long dishId, Integer price, String description) {
+        Dish dish = dishPersistencePort.findById(dishId);
+
+        if (price != null) {
+            dish.setPrice(price);
+
+            if (!dish.isValidPrice()) {
+                throw new InvalidPriceException(ExceptionConstants.INVALID_PRICE_EXCEPTION_MESSAGE);
+            }
+        }
+
+        if (description != null) {
+            dish.setDescription(description);
+        }
+
+        return dishPersistencePort.save(dish);
+    }
 }

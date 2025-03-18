@@ -15,6 +15,7 @@ public class DtoConstants {
     public static final String DISH_PRICE_CANNOT_BE_BLANK = "The dish price cannot be blank";
     public static final String DISH_DESCRIPTION_CANNOT_BE_BLANK = "The dish description cannot be blank";
     public static final String DISH_IMAGE_CANNOT_BE_BLANK = "The dish image URL cannot be blank";
+    public static final String DISH_ID_CANNOT_BE_BLANK = "The dish ID cannot be blank";
     public static final String CATEGORY_CANNOT_BE_BLANK = "The category cannot be blank";
     public static final String RESTAURANT_ID_CANNOT_BE_BLANK = "The restaurant ID cannot be blank";
 }
