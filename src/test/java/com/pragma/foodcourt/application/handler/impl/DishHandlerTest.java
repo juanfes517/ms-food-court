@@ -1,6 +1,7 @@
 package com.pragma.foodcourt.application.handler.impl;
 
 import com.pragma.foodcourt.application.dto.request.CreateDishRequestDto;
+import com.pragma.foodcourt.application.dto.request.UpdateDishRequestDto;
 import com.pragma.foodcourt.application.dto.response.CategoryResponseDto;
 import com.pragma.foodcourt.application.dto.response.DishResponseDto;
 import com.pragma.foodcourt.application.dto.response.RestaurantResponseDto;
@@ -124,6 +125,131 @@ class DishHandlerTest {
         assertEquals(mappedDish.getCategory(), result.getCategory());
         assertEquals(mappedDish.getRestaurant(), result.getRestaurant());
         assertEquals(mappedDish.isActive(), result.isActive());
+    }
 
+    @Test
+    void updateDish_WhenPriceIsNotNull_AndDescriptionIsNull() {
+        UpdateDishRequestDto updateDishRequestDto = UpdateDishRequestDto.builder()
+                .dishId(1L)
+                .price(10)
+                .description(null)
+                .build();
+
+        Dish updatedDish = Dish.builder()
+                .id(1L)
+                .name("dish name")
+                .price(updateDishRequestDto.getPrice())
+                .description("dish description")
+                .imageUrl("dish image url")
+                .category(new Category())
+                .restaurant(new Restaurant())
+                .active(true)
+                .build();
+
+        DishResponseDto dishResponseDto = DishResponseDto.builder()
+                .id(1L)
+                .name("dish name")
+                .price(updateDishRequestDto.getPrice())
+                .description("dish description")
+                .imageUrl("dish image url")
+                .category(new CategoryResponseDto())
+                .restaurant(new RestaurantResponseDto())
+                .active(true)
+                .build();
+
+        when(dishServicePort.updateDish(updateDishRequestDto.getDishId(), updateDishRequestDto.getPrice(), updateDishRequestDto.getDescription()))
+                .thenReturn(updatedDish);
+        when(modelMapper.map(updatedDish, DishResponseDto.class))
+                .thenReturn(dishResponseDto);
+
+        DishResponseDto result = dishHandler.updateDish(updateDishRequestDto);
+
+        assertNotNull(result);
+        assertEquals(updateDishRequestDto.getPrice(), result.getPrice());
+        assertEquals("dish description", result.getDescription());
+    }
+
+    @Test
+    void updateDish_WhenPriceIsNull_AndDescriptionIsNotNull() {
+        UpdateDishRequestDto updateDishRequestDto = UpdateDishRequestDto.builder()
+                .dishId(1L)
+                .price(null)
+                .description("New description")
+                .build();
+
+        Dish updatedDish = Dish.builder()
+                .id(1L)
+                .name("dish name")
+                .price(10)
+                .description(updateDishRequestDto.getDescription())
+                .imageUrl("dish image url")
+                .category(new Category())
+                .restaurant(new Restaurant())
+                .active(true)
+                .build();
+
+        DishResponseDto dishResponseDto = DishResponseDto.builder()
+                .id(1L)
+                .name("dish name")
+                .price(10)
+                .description(updateDishRequestDto.getDescription())
+                .imageUrl("dish image url")
+                .category(new CategoryResponseDto())
+                .restaurant(new RestaurantResponseDto())
+                .active(true)
+                .build();
+
+        when(dishServicePort.updateDish(updateDishRequestDto.getDishId(), updateDishRequestDto.getPrice(), updateDishRequestDto.getDescription()))
+                .thenReturn(updatedDish);
+        when(modelMapper.map(updatedDish, DishResponseDto.class))
+                .thenReturn(dishResponseDto);
+
+        DishResponseDto result = dishHandler.updateDish(updateDishRequestDto);
+
+        assertNotNull(result);
+        assertEquals(10, result.getPrice());
+        assertEquals(updateDishRequestDto.getDescription(), result.getDescription());
+    }
+
+    @Test
+    void updateDish_WhenPriceIsNotNull_AndDescriptionIsNotNull() {
+        UpdateDishRequestDto updateDishRequestDto = UpdateDishRequestDto.builder()
+                .dishId(1L)
+                .price(20)
+                .description("New description")
+                .build();
+
+        Dish updatedDish = Dish.builder()
+                .id(1L)
+                .name("dish name")
+                .price(updateDishRequestDto.getPrice())
+                .description(updateDishRequestDto.getDescription())
+                .imageUrl("dish image url")
+                .category(new Category())
+                .restaurant(new Restaurant())
+                .active(true)
+                .build();
+
+        DishResponseDto dishResponseDto = DishResponseDto.builder()
+                .id(1L)
+                .name("dish name")
+                .price(updateDishRequestDto.getPrice())
+                .description(updateDishRequestDto.getDescription())
+                .imageUrl("dish image url")
+                .category(new CategoryResponseDto())
+                .restaurant(new RestaurantResponseDto())
+                .active(true)
+                .build();
+
+        when(dishServicePort.updateDish(updateDishRequestDto.getDishId(), updateDishRequestDto.getPrice(), updateDishRequestDto.getDescription()))
+                .thenReturn(updatedDish);
+        when(modelMapper.map(updatedDish, DishResponseDto.class))
+                .thenReturn(dishResponseDto);
+
+        DishResponseDto result = dishHandler.updateDish(updateDishRequestDto);
+
+        assertNotNull(result);
+        assertEquals(updateDishRequestDto.getPrice(), result.getPrice());
+        assertEquals(updateDishRequestDto.getDescription(), result.getDescription());
     }
 }

@@ -174,4 +174,104 @@ class DishUseCaseTest {
 
         assertEquals(ExceptionConstants.INVALID_PRICE_EXCEPTION_MESSAGE, result.getMessage());
     }
+
+    @Test
+    void updateDish_WhenUpdatePriceIsSuccessful() {
+        Long dishId = 1L;
+        Integer dishPrice = 20;
+
+        Dish dish = Dish.builder()
+                .id(dishId)
+                .name("Dish name")
+                .category(new Category())
+                .description("Dish description")
+                .price(5)
+                .restaurant(new Restaurant())
+                .imageUrl("Image Url")
+                .active(true)
+                .build();
+
+        Dish savedDish = Dish.builder()
+                .id(dishId)
+                .name("Dish name")
+                .category(new Category())
+                .description("Dish description")
+                .price(dishPrice)
+                .restaurant(new Restaurant())
+                .imageUrl("Image Url")
+                .active(true)
+                .build();
+
+        when(dishPersistencePort.findById(dishId))
+                .thenReturn(dish);
+        when(dishPersistencePort.save(dish))
+                .thenReturn(savedDish);
+
+        Dish result = dishUseCase.updateDish(dishId, dishPrice, null);
+
+        assertEquals(savedDish, result);
+        assertEquals(dishPrice, result.getPrice());
+    }
+
+    @Test
+    void updateDish_WhenUpdatePriceThrowsInvalidPriceException() {
+        Long dishId = 1L;
+        Integer dishPrice = -20;
+
+        Dish dish = Dish.builder()
+                .id(dishId)
+                .name("Dish name")
+                .category(new Category())
+                .description("Dish description")
+                .price(5)
+                .restaurant(new Restaurant())
+                .imageUrl("Image Url")
+                .active(true)
+                .build();
+
+        when(dishPersistencePort.findById(dishId))
+                .thenReturn(dish);
+
+        InvalidPriceException result = assertThrows(InvalidPriceException.class, () -> dishUseCase.updateDish(dishId, dishPrice, null));
+
+        assertEquals(ExceptionConstants.INVALID_PRICE_EXCEPTION_MESSAGE, result.getMessage());
+    }
+
+    @Test
+    void updateDish_WhenUpdateDescriptionIsSuccessful() {
+        Long dishId = 1L;
+        String description = "New dish description";
+
+        Dish dish = Dish.builder()
+                .id(dishId)
+                .name("Dish name")
+                .category(new Category())
+                .description("Dish description")
+                .price(5)
+                .restaurant(new Restaurant())
+                .imageUrl("Image Url")
+                .active(true)
+                .build();
+
+        Dish savedDish = Dish.builder()
+                .id(dishId)
+                .name("Dish name")
+                .category(new Category())
+                .description(description)
+                .price(5)
+                .restaurant(new Restaurant())
+                .imageUrl("Image Url")
+                .active(true)
+                .build();
+
+        when(dishPersistencePort.findById(dishId))
+                .thenReturn(dish);
+        when(dishPersistencePort.save(dish))
+                .thenReturn(savedDish);
+
+        Dish result = dishUseCase.updateDish(dishId, null, description);
+
+        assertEquals(savedDish, result);
+        assertEquals(description, result.getDescription());
+    }
 }
