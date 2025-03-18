@@ -15,4 +15,9 @@ public class UserFeignAdapter implements IUserExternalServicePort {
     public boolean userHasRole(Long userId, String roleName) {
         return userFeignClient.userHasRole(userId, roleName);
     }
+
+    @Override
+    public boolean userHasEmail(Long userId, String email) {
+        return userFeignClient.userHasEmail(userId, email);
+    }
 }
