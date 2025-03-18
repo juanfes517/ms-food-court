@@ -1,6 +1,8 @@
 package com.pragma.foodcourt.infrastructure.out.jpa.adapter;
 
 import com.pragma.foodcourt.domain.model.Restaurant;
+import com.pragma.foodcourt.infrastructure.exception.RestaurantNotFoundException;
+import com.pragma.foodcourt.infrastructure.helper.constants.ExceptionConstants;
 import com.pragma.foodcourt.infrastructure.out.jpa.entity.RestaurantEntity;
 import com.pragma.foodcourt.infrastructure.out.jpa.repository.RestaurantRepository;
 import org.junit.jupiter.api.Test;
@@ -9,6 +11,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
+
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
@@ -85,4 +89,56 @@ class RestaurantJpaAdapterTest {
         assertEquals(savedRestaurant.getLogoUrl(), result.getLogoUrl());
         assertEquals(savedRestaurant.getOwnerId(), result.getOwnerId());
     }
+
+    @Test
+    void findById_WhenIsSuccessful() {
+        Long id = 1L;
+
+        RestaurantEntity restaurantEntity = RestaurantEntity.builder()
+                .id(1L)
+                .name("Restaurant Name")
+                .nit("12344567")
+                .address("Restaurant Address")
+                .cellPhoneNumber("+573005698325")
+                .logoUrl("Restaurant Logo")
+                .ownerId(1L)
+                .build();
+
+        Restaurant mappedRestaurant = Restaurant.builder()
+                .id(1L)
+                .name("Restaurant Name")
+                .nit("12344567")
+                .address("Restaurant Address")
+                .cellPhoneNumber("+573005698325")
+                .logoUrl("Restaurant Logo")
+                .ownerId(1L)
+                .build();
+
+        when(restaurantRepository.findById(id))
+                .thenReturn(Optional.of(restaurantEntity));
+        when(modelMapper.map(restaurantEntity, Restaurant.class))
+                .thenReturn(mappedRestaurant);
+
+        Restaurant result = restaurantJpaAdapter.findById(id);
+
+        assertNotNull(result);
+        assertEquals(mappedRestaurant.getId(), result.getId());
+        assertEquals(mappedRestaurant.getName(), result.getName());
+        assertEquals(mappedRestaurant.getNit(), result.getNit());
+        assertEquals(mappedRestaurant.getAddress(), result.getAddress());
+        assertEquals(mappedRestaurant.getCellPhoneNumber(), result.getCellPhoneNumber());
+        assertEquals(mappedRestaurant.getLogoUrl(), result.getLogoUrl());
+        assertEquals(mappedRestaurant.getOwnerId(), result.getOwnerId());
+    }
+
+    @Test
+    void findById_ShouldThrowRestaurantNotFoundException() {
+        Long id = 1L;
+
+        RestaurantNotFoundException restaurantNotFoundException = assertThrows(RestaurantNotFoundException.class, () -> restaurantJpaAdapter.findById(id));
+
+        assertEquals(ExceptionConstants.RESTAURANT_NOT_FOUND, restaurantNotFoundException.getMessage());
+    }
+
+
 }

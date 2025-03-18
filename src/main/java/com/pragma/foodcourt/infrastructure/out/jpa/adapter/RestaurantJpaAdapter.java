@@ -2,6 +2,8 @@ package com.pragma.foodcourt.infrastructure.out.jpa.adapter;
 
 import com.pragma.foodcourt.domain.model.Restaurant;
 import com.pragma.foodcourt.domain.spi.IRestaurantPersistencePort;
+import com.pragma.foodcourt.infrastructure.exception.RestaurantNotFoundException;
+import com.pragma.foodcourt.infrastructure.helper.constants.ExceptionConstants;
 import com.pragma.foodcourt.infrastructure.out.jpa.entity.RestaurantEntity;
 import com.pragma.foodcourt.infrastructure.out.jpa.repository.RestaurantRepository;
 import lombok.RequiredArgsConstructor;
@@ -21,5 +23,13 @@ public class RestaurantJpaAdapter implements IRestaurantPersistencePort {
         RestaurantEntity savedRestaurantEntity = restaurantRepository.save(mappedRestaurantEntity);
 
         return modelMapper.map(savedRestaurantEntity, Restaurant.class);
+    }
+
+    @Override
+    public Restaurant findById(Long id) {
+        RestaurantEntity restaurantEntity = restaurantRepository.findById(id)
+                .orElseThrow(() -> new RestaurantNotFoundException(ExceptionConstants.RESTAURANT_NOT_FOUND));
+
+        return modelMapper.map(restaurantEntity, Restaurant.class);
     }
 }

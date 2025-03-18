@@ -161,4 +161,33 @@ class RestaurantUseCaseTest {
 
         assertEquals(ExceptionConstants.NUMERIC_NAME_EXCEPTION_MESSAGE, result.getMessage());
     }
+
+    @Test
+    void findRestaurantById_WhenIsSuccessful() {
+        Long id = 1L;
+
+        Restaurant restaurant = Restaurant.builder()
+                .id(1L)
+                .name("Restaurant")
+                .address("Address")
+                .cellPhoneNumber("+573005698325")
+                .logoUrl("logoUrl")
+                .nit("1234565")
+                .ownerId(2L)
+                .build();
+
+        when(restaurantPersistencePort.findById(id))
+                .thenReturn(restaurant);
+
+        Restaurant result = restaurantUseCase.findRestaurantById(id);
+
+        assertEquals(restaurant, result);
+        assertEquals(restaurant.getId(), result.getId());
+        assertEquals(restaurant.getName(), result.getName());
+        assertEquals(restaurant.getAddress(), result.getAddress());
+        assertEquals(restaurant.getCellPhoneNumber(), result.getCellPhoneNumber());
+        assertEquals(restaurant.getLogoUrl(), result.getLogoUrl());
+        assertEquals(restaurant.getNit(), result.getNit());
+        assertEquals(restaurant.getOwnerId(), result.getOwnerId());
+    }
 }
