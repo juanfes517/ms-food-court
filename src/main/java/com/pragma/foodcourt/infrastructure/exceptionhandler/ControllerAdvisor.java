@@ -1,10 +1,9 @@
 package com.pragma.foodcourt.infrastructure.exceptionhandler;
 
 import com.pragma.foodcourt.application.dto.response.ExceptionResponseDto;
-import com.pragma.foodcourt.domain.exception.InvalidCellPhoneNumberException;
-import com.pragma.foodcourt.domain.exception.InvalidUserRoleException;
-import com.pragma.foodcourt.domain.exception.NonNumericNitException;
-import com.pragma.foodcourt.domain.exception.NumericNameException;
+import com.pragma.foodcourt.domain.exception.*;
+import com.pragma.foodcourt.infrastructure.exception.CategoryNotFoundException;
+import com.pragma.foodcourt.infrastructure.exception.RestaurantNotFoundException;
 import com.pragma.foodcourt.infrastructure.exception.UserNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -84,6 +83,46 @@ public class ControllerAdvisor {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(UserNotFoundException.class)
     public ExceptionResponseDto handleUserNotFoundException(UserNotFoundException e) {
+        log.error(e.getMessage());
+        return ExceptionResponseDto.builder()
+                .message(e.getMessage())
+                .timestamp(LocalDateTime.now())
+                .build();
+    }
+
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(CategoryNotFoundException.class)
+    public ExceptionResponseDto handleCategoryNotFoundException(CategoryNotFoundException e) {
+        log.error(e.getMessage());
+        return ExceptionResponseDto.builder()
+                .message(e.getMessage())
+                .timestamp(LocalDateTime.now())
+                .build();
+    }
+
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(RestaurantNotFoundException.class)
+    public ExceptionResponseDto handleRestaurantNotFoundException(RestaurantNotFoundException e) {
+        log.error(e.getMessage());
+        return ExceptionResponseDto.builder()
+                .message(e.getMessage())
+                .timestamp(LocalDateTime.now())
+                .build();
+    }
+
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    @ExceptionHandler(InvalidRestaurantOwnerException.class)
+    public ExceptionResponseDto handleInvalidRestaurantOwnerException(InvalidRestaurantOwnerException e) {
+        log.error(e.getMessage());
+        return ExceptionResponseDto.builder()
+                .message(e.getMessage())
+                .timestamp(LocalDateTime.now())
+                .build();
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(InvalidPriceException.class)
+    public ExceptionResponseDto handleInvalidPriceException(InvalidPriceException e) {
         log.error(e.getMessage());
         return ExceptionResponseDto.builder()
                 .message(e.getMessage())

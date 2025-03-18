@@ -15,7 +15,7 @@ public class CreateDishRequestDto {
     @NotBlank(message = DtoConstants.DISH_NAME_CANNOT_BE_BLANK)
     private String name;
 
-    @NotBlank(message = DtoConstants.DISH_PRICE_CANNOT_BE_BLANK)
+    @NotNull(message = DtoConstants.DISH_PRICE_CANNOT_BE_BLANK)
     private int price;
 
     @NotBlank(message = DtoConstants.DISH_DESCRIPTION_CANNOT_BE_BLANK)
