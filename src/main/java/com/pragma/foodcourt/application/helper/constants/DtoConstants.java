@@ -11,4 +11,10 @@ public class DtoConstants {
     public static final String LOGO_URL_CANNOT_BE_BLANK = "The restaurant logo URL cannot be blank";
     public static final String OWNER_ID_CANNOT_BE_BLANK = "The restaurant owner ID cannot be blank";
 
+    public static final String DISH_NAME_CANNOT_BE_BLANK = "The dish name cannot be blank";
+    public static final String DISH_PRICE_CANNOT_BE_BLANK = "The dish price cannot be blank";
+    public static final String DISH_DESCRIPTION_CANNOT_BE_BLANK = "The dish description cannot be blank";
+    public static final String DISH_IMAGE_CANNOT_BE_BLANK = "The dish image URL cannot be blank";
+    public static final String CATEGORY_CANNOT_BE_BLANK = "The category cannot be blank";
+    public static final String RESTAURANT_ID_CANNOT_BE_BLANK = "The restaurant ID cannot be blank";
 }
