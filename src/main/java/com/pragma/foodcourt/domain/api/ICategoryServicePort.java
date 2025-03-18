@@ -1,8 +1,8 @@
-package com.pragma.foodcourt.domain.spi;
+package com.pragma.foodcourt.domain.api;
 
 import com.pragma.foodcourt.domain.model.Category;
 
-public interface ICategoryPersistencePort {
+public interface ICategoryServicePort {
 
     Category findByName(String name);
 }
