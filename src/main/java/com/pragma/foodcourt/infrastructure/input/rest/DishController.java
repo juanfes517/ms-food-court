@@ -1,6 +1,7 @@
 package com.pragma.foodcourt.infrastructure.input.rest;
 
 import com.pragma.foodcourt.application.dto.request.CreateDishRequestDto;
+import com.pragma.foodcourt.application.dto.request.UpdateDishRequestDto;
 import com.pragma.foodcourt.application.dto.response.DishResponseDto;
 import com.pragma.foodcourt.application.handler.IDishHandler;
 import com.pragma.foodcourt.infrastructure.helper.constants.ApiConstants;
@@ -12,10 +13,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -37,5 +35,17 @@ public class DishController {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(dishHandler.saveDish(requestDto));
+    }
+
+    @Operation(summary = ApiConstants.UPDATE_DISH_DESCRIPTION)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = ApiConstants.OK_DESCRIPTION, content = @Content),
+            @ApiResponse(responseCode = "400", description = ApiConstants.BAD_REQUEST_DESCRIPTION, content = @Content),
+            @ApiResponse(responseCode = "404", description = ApiConstants.NOT_FOUND_DESCRIPTION, content = @Content),
+            @ApiResponse(responseCode = "409", description = ApiConstants.CONFLICT_DESCRIPTION, content = @Content)
+    })
+    @PatchMapping
+    public ResponseEntity<DishResponseDto> updateDish(@Valid @RequestBody UpdateDishRequestDto requestDto) {
+        return ResponseEntity.ok(dishHandler.updateDish(requestDto));
     }
 }
