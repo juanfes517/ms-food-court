@@ -3,6 +3,7 @@ package com.pragma.foodcourt.infrastructure.exceptionhandler;
 import com.pragma.foodcourt.application.dto.response.ExceptionResponseDto;
 import com.pragma.foodcourt.domain.exception.*;
 import com.pragma.foodcourt.infrastructure.exception.CategoryNotFoundException;
+import com.pragma.foodcourt.infrastructure.exception.DishNotFoundException;
 import com.pragma.foodcourt.infrastructure.exception.RestaurantNotFoundException;
 import com.pragma.foodcourt.infrastructure.exception.UserNotFoundException;
 import lombok.extern.slf4j.Slf4j;
@@ -123,6 +124,16 @@ public class ControllerAdvisor {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(InvalidPriceException.class)
     public ExceptionResponseDto handleInvalidPriceException(InvalidPriceException e) {
+        log.error(e.getMessage());
+        return ExceptionResponseDto.builder()
+                .message(e.getMessage())
+                .timestamp(LocalDateTime.now())
+                .build();
+    }
+
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(DishNotFoundException.class)
+    public ExceptionResponseDto handleDishNotFoundException(DishNotFoundException e) {
         log.error(e.getMessage());
         return ExceptionResponseDto.builder()
                 .message(e.getMessage())

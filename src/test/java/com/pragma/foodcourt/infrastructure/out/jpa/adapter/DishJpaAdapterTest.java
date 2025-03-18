@@ -3,6 +3,8 @@ package com.pragma.foodcourt.infrastructure.out.jpa.adapter;
 import com.pragma.foodcourt.domain.model.Category;
 import com.pragma.foodcourt.domain.model.Dish;
 import com.pragma.foodcourt.domain.model.Restaurant;
+import com.pragma.foodcourt.infrastructure.exception.DishNotFoundException;
+import com.pragma.foodcourt.infrastructure.helper.constants.ExceptionConstants;
 import com.pragma.foodcourt.infrastructure.out.jpa.entity.CategoryEntity;
 import com.pragma.foodcourt.infrastructure.out.jpa.entity.DishEntity;
 import com.pragma.foodcourt.infrastructure.out.jpa.entity.RestaurantEntity;
@@ -13,6 +15,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
+
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
@@ -123,5 +127,56 @@ class DishJpaAdapterTest {
         assertEquals(mappedDish.isActive(), result.isActive());
         assertEquals(mappedDish.getCategory(), result.getCategory());
         assertEquals(mappedDish.getRestaurant(), result.getRestaurant());
+    }
+
+    @Test
+    void findById_WhenIsSuccessful() {
+        Long id = 1L;
+
+        DishEntity dishEntity = DishEntity.builder()
+                .id(id)
+                .name("dish name")
+                .category(new CategoryEntity())
+                .description("dish description")
+                .price(5)
+                .restaurant(new RestaurantEntity())
+                .imageUrl("image URL")
+                .active(true)
+                .build();
+
+        Dish dish = Dish.builder()
+                .id(id)
+                .name("dish name")
+                .category(new Category())
+                .description("dish description")
+                .price(5)
+                .restaurant(new Restaurant())
+                .imageUrl("image URL")
+                .active(true)
+                .build();
+
+        when(dishRepository.findById(id))
+                .thenReturn(Optional.of(dishEntity));
+        when(modelMapper.map(dishEntity, Dish.class))
+                .thenReturn(dish);
+
+        Dish result = dishJpaAdapter.findById(id);
+
+        assertNotNull(result);
+        assertEquals(dishEntity.getId(), result.getId());
+        assertEquals(dishEntity.getName(), result.getName());
+        assertEquals(dishEntity.getDescription(), result.getDescription());
+        assertEquals(dishEntity.getPrice(), result.getPrice());
+        assertEquals(dishEntity.getImageUrl(), result.getImageUrl());
+        assertEquals(dishEntity.isActive(), result.isActive());
+    }
+
+    @Test
+    void findById_ThrowDishNotFoundException() {
+        Long id = 1L;
+
+        DishNotFoundException result = assertThrows(DishNotFoundException.class, () -> dishJpaAdapter.findById(id));
+
+        assertEquals(ExceptionConstants.DISH_NOT_FOUND, result.getMessage());
     }
 }
