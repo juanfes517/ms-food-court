@@ -15,5 +15,10 @@ public class SecurityConstants {
             "/api/v1/restaurants"
     };
 
+    public static final String[] OWNER_ENDPOINTS = {
+            "/api/v1/dishes"
+    };
+
     public static final String ADMIN_ROLE = "ADMIN";
+    public static final String OWNER_ROLE = "OWNER";
 }

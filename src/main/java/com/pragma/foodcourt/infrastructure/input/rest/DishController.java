@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/dishes")
+@RequestMapping("/api/v1/dishes")
 public class DishController {
 
     private final IDishHandler dishHandler;
