@@ -1,10 +1,10 @@
 package com.pragma.foodcourt.infrastructure.security.adapter;
 
-import com.pragma.foodcourt.domain.spi.IJwtServiceUtils;
+import com.pragma.foodcourt.domain.spi.IJwtSecurityServicePort;
 import org.springframework.stereotype.Component;
 
 @Component
-public class JwtUtilsAdapter implements IJwtServiceUtils {
+public class JwtSecurityAdapter implements IJwtSecurityServicePort {
 
     @Override
     public String extractSubjectFromToken() {

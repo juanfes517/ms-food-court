@@ -7,7 +7,7 @@ import com.pragma.foodcourt.domain.model.Category;
 import com.pragma.foodcourt.domain.model.Dish;
 import com.pragma.foodcourt.domain.model.Restaurant;
 import com.pragma.foodcourt.domain.spi.IDishPersistencePort;
-import com.pragma.foodcourt.domain.spi.IJwtServiceUtils;
+import com.pragma.foodcourt.domain.spi.IJwtSecurityServicePort;
 import com.pragma.foodcourt.domain.spi.IUserExternalServicePort;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,7 +28,7 @@ class DishUseCaseTest {
     private IDishPersistencePort dishPersistencePort;
 
     @Mock
-    private IJwtServiceUtils jwtServiceUtils;
+    private IJwtSecurityServicePort jwtServiceUtils;
 
     @Mock
     private IUserExternalServicePort userExternalServicePort;
