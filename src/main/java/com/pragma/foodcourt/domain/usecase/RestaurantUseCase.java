@@ -19,7 +19,7 @@ public class RestaurantUseCase implements IRestaurantServicePort {
 
     @Override
     public Restaurant saveRestaurant(Restaurant restaurant) {
-        if (!userExternalServicePort.userHasRole(restaurant.getOwnerId(), "ROLE_OWNER")) {
+        if (!userExternalServicePort.userHasRole(restaurant.getOwnerId(), "OWNER")) {
             throw new InvalidUserRoleException(ExceptionConstants.ONLY_OWNER_EXCEPTION_MESSAGE);
         }
         if (!restaurant.isNumericCellPhoneNumber()) {
