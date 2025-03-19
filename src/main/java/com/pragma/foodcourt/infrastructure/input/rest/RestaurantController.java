@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/restaurants")
+@RequestMapping("/api/v1/restaurants")
 public class RestaurantController {
 
     private final IRestaurantHandler restaurantHandler;

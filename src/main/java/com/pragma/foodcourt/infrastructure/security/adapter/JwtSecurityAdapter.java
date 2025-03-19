@@ -19,9 +19,6 @@ public class JwtSecurityAdapter implements IJwtSecurityServicePort {
     @Value("${jwt.secret.key}")
     private String secretKey;
 
-    @Value("${jwt.time.expiration}")
-    private String timeExpiration;
-
     @Override
     public boolean validateToken(String token) {
         try {
