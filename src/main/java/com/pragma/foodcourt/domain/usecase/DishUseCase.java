@@ -6,7 +6,7 @@ import com.pragma.foodcourt.domain.exception.InvalidRestaurantOwnerException;
 import com.pragma.foodcourt.domain.helper.constants.ExceptionConstants;
 import com.pragma.foodcourt.domain.model.Dish;
 import com.pragma.foodcourt.domain.spi.IDishPersistencePort;
-import com.pragma.foodcourt.domain.spi.IJwtServiceUtils;
+import com.pragma.foodcourt.domain.spi.IJwtSecurityServicePort;
 import com.pragma.foodcourt.domain.spi.IUserExternalServicePort;
 import lombok.RequiredArgsConstructor;
 
@@ -14,14 +14,14 @@ import lombok.RequiredArgsConstructor;
 public class DishUseCase implements IDishServicePort {
 
     private final IDishPersistencePort dishPersistencePort;
-    private final IJwtServiceUtils jwtServiceUtils;
+    private final IJwtSecurityServicePort jwtSecurityServicePort;
     private final IUserExternalServicePort userExternalServicePort;
 
     @Override
     public Dish saveDish(Dish dish) {
-
-        String tokenEmail = jwtServiceUtils.extractSubjectFromToken();
+        String tokenEmail = jwtSecurityServicePort.getSubject();
         Long restaurantOwnerId = dish.getRestaurant().getOwnerId();
+        
         boolean isUserTheRestaurantOwner = userExternalServicePort.userHasEmail(restaurantOwnerId, tokenEmail);
 
         if (!isUserTheRestaurantOwner) {
@@ -38,7 +38,15 @@ public class DishUseCase implements IDishServicePort {
     @Override
     public Dish updateDish(Long dishId, Integer price, String description) {
         Dish dish = dishPersistencePort.findById(dishId);
+        String tokenEmail = jwtSecurityServicePort.getSubject();
+        Long restaurantOwnerId = dish.getRestaurant().getOwnerId();
 
+        boolean isUserTheRestaurantOwner = userExternalServicePort.userHasEmail(restaurantOwnerId, tokenEmail);
+
+        if (!isUserTheRestaurantOwner) {
+            throw new InvalidRestaurantOwnerException(ExceptionConstants.INVALID_RESTAURANT_OWNER_MESSAGE);
+        }
+        
         if (price != null) {
             dish.setPrice(price);
 

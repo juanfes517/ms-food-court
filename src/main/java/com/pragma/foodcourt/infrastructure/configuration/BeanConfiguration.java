@@ -38,7 +38,7 @@ public class BeanConfiguration {
     }
 
     @Bean
-    public IDishServicePort dishService(IDishPersistencePort dishPersistencePort, IJwtServiceUtils jwtServiceUtils, IUserExternalServicePort userExternalServicePort) {
+    public IDishServicePort dishService(IDishPersistencePort dishPersistencePort, IJwtSecurityServicePort jwtServiceUtils, IUserExternalServicePort userExternalServicePort) {
         return new DishUseCase(dishPersistencePort, jwtServiceUtils, userExternalServicePort);
     }
 

@@ -9,4 +9,5 @@ public class ExceptionConstants {
     public static final String DISH_NOT_FOUND = "Dish not found";
     public static final String CATEGORY_NOT_FOUND = "Category not found";
     public static final String GENERIC_ERROR = "Unexpected Error";
+    public static final String BAD_CREDENTIALS = "Unauthorized";
 }

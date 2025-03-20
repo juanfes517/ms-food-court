@@ -8,6 +8,7 @@ import com.pragma.foodcourt.infrastructure.exception.RestaurantNotFoundException
 import com.pragma.foodcourt.infrastructure.exception.UserNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -134,6 +135,16 @@ public class ControllerAdvisor {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(DishNotFoundException.class)
     public ExceptionResponseDto handleDishNotFoundException(DishNotFoundException e) {
+        log.error(e.getMessage());
+        return ExceptionResponseDto.builder()
+                .message(e.getMessage())
+                .timestamp(LocalDateTime.now())
+                .build();
+    }
+
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    @ExceptionHandler(BadCredentialsException.class)
+    public ExceptionResponseDto handleBadCredentialsException(BadCredentialsException e) {
         log.error(e.getMessage());
         return ExceptionResponseDto.builder()
                 .message(e.getMessage())
