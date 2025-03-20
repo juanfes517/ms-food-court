@@ -19,9 +19,9 @@ public class DishUseCase implements IDishServicePort {
 
     @Override
     public Dish saveDish(Dish dish) {
-
         String tokenEmail = jwtSecurityServicePort.getSubject();
         Long restaurantOwnerId = dish.getRestaurant().getOwnerId();
+
         boolean isUserTheRestaurantOwner = userExternalServicePort.userHasEmail(restaurantOwnerId, tokenEmail);
 
         if (!isUserTheRestaurantOwner) {
@@ -38,7 +38,15 @@ public class DishUseCase implements IDishServicePort {
     @Override
     public Dish updateDish(Long dishId, Integer price, String description) {
         Dish dish = dishPersistencePort.findById(dishId);
+        String tokenEmail = jwtSecurityServicePort.getSubject();
+        Long restaurantOwnerId = dish.getRestaurant().getOwnerId();
 
+        boolean isUserTheRestaurantOwner = userExternalServicePort.userHasEmail(restaurantOwnerId, tokenEmail);
+
+        if (!isUserTheRestaurantOwner) {
+            throw new InvalidRestaurantOwnerException(ExceptionConstants.INVALID_RESTAURANT_OWNER_MESSAGE);
+        }
+        
         if (price != null) {
             dish.setPrice(price);
 
