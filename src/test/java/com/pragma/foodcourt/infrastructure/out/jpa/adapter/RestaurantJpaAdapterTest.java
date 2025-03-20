@@ -140,5 +140,54 @@ class RestaurantJpaAdapterTest {
         assertEquals(ExceptionConstants.RESTAURANT_NOT_FOUND, restaurantNotFoundException.getMessage());
     }
 
+    @Test
+    void findByOwnerId_WhenIsSuccessful() {
+        Long ownerId = 1L;
+
+        RestaurantEntity restaurantEntity = RestaurantEntity.builder()
+                .id(1L)
+                .name("Restaurant Name")
+                .nit("12344567")
+                .address("Restaurant Address")
+                .cellPhoneNumber("+573005698325")
+                .logoUrl("Restaurant Logo")
+                .ownerId(ownerId)
+                .build();
+
+        Restaurant mappedRestaurant = Restaurant.builder()
+                .id(1L)
+                .name("Restaurant Name")
+                .nit("12344567")
+                .address("Restaurant Address")
+                .cellPhoneNumber("+573005698325")
+                .logoUrl("Restaurant Logo")
+                .ownerId(ownerId)
+                .build();
+
+        when(restaurantRepository.findByOwnerId(ownerId))
+                .thenReturn(Optional.of(restaurantEntity));
+        when(modelMapper.map(restaurantEntity, Restaurant.class))
+                .thenReturn(mappedRestaurant);
+
+        Restaurant result = restaurantJpaAdapter.findByOwnerId(ownerId);
+
+        assertNotNull(result);
+        assertEquals(mappedRestaurant.getId(), result.getId());
+        assertEquals(mappedRestaurant.getName(), result.getName());
+        assertEquals(mappedRestaurant.getNit(), result.getNit());
+        assertEquals(mappedRestaurant.getAddress(), result.getAddress());
+        assertEquals(mappedRestaurant.getCellPhoneNumber(), result.getCellPhoneNumber());
+        assertEquals(mappedRestaurant.getLogoUrl(), result.getLogoUrl());
+        assertEquals(mappedRestaurant.getOwnerId(), result.getOwnerId());
+    }
+
+    @Test
+    void findByOwnerId_ShouldThrowRestaurantNotFoundException() {
+        Long ownerId = 1L;
+
+        RestaurantNotFoundException restaurantNotFoundException = assertThrows(RestaurantNotFoundException.class, () -> restaurantJpaAdapter.findByOwnerId(ownerId));
+
+        assertEquals(ExceptionConstants.RESTAURANT_NOT_FOUND, restaurantNotFoundException.getMessage());
+    }
 
 }
