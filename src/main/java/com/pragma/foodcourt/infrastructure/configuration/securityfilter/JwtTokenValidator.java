@@ -1,6 +1,7 @@
 package com.pragma.foodcourt.infrastructure.configuration.securityfilter;
 
 import com.pragma.foodcourt.domain.spi.IJwtSecurityServicePort;
+import com.pragma.foodcourt.infrastructure.helper.jwt.TokenHolder;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -46,6 +47,8 @@ public class JwtTokenValidator extends OncePerRequestFilter {
                 SecurityContext context = SecurityContextHolder.createEmptyContext();
                 context.setAuthentication(authenticationToken);
                 SecurityContextHolder.setContext(context);
+
+                TokenHolder.setToken(token);
             }
         }
         filterChain.doFilter(request, response);
