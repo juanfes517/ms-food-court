@@ -21,7 +21,7 @@ public class DishUseCase implements IDishServicePort {
     public Dish saveDish(Dish dish) {
         String tokenEmail = jwtSecurityServicePort.getSubject();
         Long restaurantOwnerId = dish.getRestaurant().getOwnerId();
-
+        
         boolean isUserTheRestaurantOwner = userExternalServicePort.userHasEmail(restaurantOwnerId, tokenEmail);
 
         if (!isUserTheRestaurantOwner) {

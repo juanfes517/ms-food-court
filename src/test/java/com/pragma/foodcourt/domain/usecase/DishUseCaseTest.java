@@ -75,7 +75,7 @@ class DishUseCaseTest {
         String tokenEmail = "test@mail.com";
         Long restaurantOwnerId = dish.getRestaurant().getOwnerId();
 
-        when(jwtServiceUtils.extractSubjectFromToken())
+        when(jwtServiceUtils.getSubject())
                 .thenReturn(tokenEmail);
         when(userExternalServicePort.userHasEmail(restaurantOwnerId, tokenEmail))
                 .thenReturn(true);
@@ -124,7 +124,7 @@ class DishUseCaseTest {
         String tokenEmail = "test@mail.com";
         Long restaurantOwnerId = dish.getRestaurant().getOwnerId();
 
-        when(jwtServiceUtils.extractSubjectFromToken())
+        when(jwtServiceUtils.getSubject())
                 .thenReturn(tokenEmail);
         when(userExternalServicePort.userHasEmail(restaurantOwnerId, tokenEmail))
                 .thenReturn(false);
@@ -165,7 +165,7 @@ class DishUseCaseTest {
         String tokenEmail = "test@mail.com";
         Long restaurantOwnerId = dish.getRestaurant().getOwnerId();
 
-        when(jwtServiceUtils.extractSubjectFromToken())
+        when(jwtServiceUtils.getSubject())
                 .thenReturn(tokenEmail);
         when(userExternalServicePort.userHasEmail(restaurantOwnerId, tokenEmail))
                 .thenReturn(true);
@@ -202,6 +202,13 @@ class DishUseCaseTest {
                 .active(true)
                 .build();
 
+        String tokenEmail = "test@mail.com";
+        Long restaurantOwnerId = dish.getRestaurant().getOwnerId();
+
+        when(jwtServiceUtils.getSubject())
+                .thenReturn(tokenEmail);
+        when(userExternalServicePort.userHasEmail(restaurantOwnerId, tokenEmail))
+                .thenReturn(true);
         when(dishPersistencePort.findById(dishId))
                 .thenReturn(dish);
         when(dishPersistencePort.save(dish))
@@ -229,6 +236,13 @@ class DishUseCaseTest {
                 .active(true)
                 .build();
 
+        String tokenEmail = "test@mail.com";
+        Long restaurantOwnerId = dish.getRestaurant().getOwnerId();
+
+        when(jwtServiceUtils.getSubject())
+                .thenReturn(tokenEmail);
+        when(userExternalServicePort.userHasEmail(restaurantOwnerId, tokenEmail))
+                .thenReturn(true);
         when(dishPersistencePort.findById(dishId))
                 .thenReturn(dish);
 
@@ -264,6 +278,13 @@ class DishUseCaseTest {
                 .active(true)
                 .build();
 
+        String tokenEmail = "test@mail.com";
+        Long restaurantOwnerId = dish.getRestaurant().getOwnerId();
+
+        when(jwtServiceUtils.getSubject())
+                .thenReturn(tokenEmail);
+        when(userExternalServicePort.userHasEmail(restaurantOwnerId, tokenEmail))
+                .thenReturn(true);
         when(dishPersistencePort.findById(dishId))
                 .thenReturn(dish);
         when(dishPersistencePort.save(dish))
@@ -273,5 +294,35 @@ class DishUseCaseTest {
 
         assertEquals(savedDish, result);
         assertEquals(description, result.getDescription());
+    }
+
+    @Test
+    void updateDish_WhenThrowInvalidRestaurantOwnerException() {
+        Long dishId = 1L;
+
+        Dish dish = Dish.builder()
+                .id(dishId)
+                .name("Dish name")
+                .category(new Category())
+                .description("Dish description")
+                .price(5)
+                .restaurant(new Restaurant())
+                .imageUrl("Image Url")
+                .active(true)
+                .build();
+
+        String tokenEmail = "test@mail.com";
+        Long restaurantOwnerId = dish.getRestaurant().getOwnerId();
+
+        when(jwtServiceUtils.getSubject())
+                .thenReturn(tokenEmail);
+        when(userExternalServicePort.userHasEmail(restaurantOwnerId, tokenEmail))
+                .thenReturn(false);
+        when(dishPersistencePort.findById(dishId))
+                .thenReturn(dish);
+
+        InvalidRestaurantOwnerException result = assertThrows(InvalidRestaurantOwnerException.class, () -> dishUseCase.updateDish(dishId, null, null));
+
+        assertEquals(ExceptionConstants.INVALID_RESTAURANT_OWNER_MESSAGE, result.getMessage());
     }
 }
