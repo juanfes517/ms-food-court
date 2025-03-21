@@ -61,4 +61,12 @@ public class DishUseCase implements IDishServicePort {
 
         return dishPersistencePort.save(dish);
     }
+
+    @Override
+    public Dish updateDishStatus(Long dishId, boolean status) {
+        Dish dish = dishPersistencePort.findById(dishId);
+        dish.setActive(status);
+
+        return dishPersistencePort.save(dish);
+    }
 }
