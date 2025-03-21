@@ -9,4 +9,6 @@ public interface IDishHandler {
     DishResponseDto saveDish(CreateDishRequestDto createDishRequestDto);
 
     DishResponseDto updateDish(UpdateDishRequestDto updateDishRequestDto);
+
+    DishResponseDto updateDishStatus(Long dishId, boolean status);
 }

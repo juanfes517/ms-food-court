@@ -54,4 +54,10 @@ public class DishHandler implements IDishHandler {
 
         return modelMapper.map(updatedDish, DishResponseDto.class);
     }
+
+    @Override
+    public DishResponseDto updateDishStatus(Long dishId, boolean status) {
+        Dish savedDish = dishServicePort.updateDishStatus(dishId, status);
+        return modelMapper.map(savedDish, DishResponseDto.class);
+    }
 }
