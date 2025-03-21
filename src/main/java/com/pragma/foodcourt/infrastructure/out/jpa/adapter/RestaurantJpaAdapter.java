@@ -8,6 +8,8 @@ import com.pragma.foodcourt.infrastructure.out.jpa.entity.RestaurantEntity;
 import com.pragma.foodcourt.infrastructure.out.jpa.repository.RestaurantRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -39,5 +41,11 @@ public class RestaurantJpaAdapter implements IRestaurantPersistencePort {
                 .orElseThrow(() -> new RestaurantNotFoundException(ExceptionConstants.RESTAURANT_NOT_FOUND));
 
         return modelMapper.map(restaurantEntity, Restaurant.class);
+    }
+
+    @Override
+    public Page<Restaurant> findAll(Pageable pageable) {
+        Page<RestaurantEntity> restaurantEntities = restaurantRepository.findAll(pageable);
+        return restaurantEntities.map(restaurantEntity -> modelMapper.map(restaurantEntity, Restaurant.class));
     }
 }

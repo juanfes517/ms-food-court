@@ -1,6 +1,8 @@
 package com.pragma.foodcourt.domain.spi;
 
 import com.pragma.foodcourt.domain.model.Restaurant;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface IRestaurantPersistencePort {
 
@@ -9,4 +11,6 @@ public interface IRestaurantPersistencePort {
     Restaurant findById(Long id);
 
     Restaurant findByOwnerId(Long ownerId);
+
+    Page<Restaurant> findAll(Pageable pageable);
 }

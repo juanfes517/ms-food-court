@@ -10,6 +10,8 @@ import com.pragma.foodcourt.domain.model.Restaurant;
 import com.pragma.foodcourt.domain.spi.IRestaurantPersistencePort;
 import com.pragma.foodcourt.domain.spi.IUserExternalServicePort;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 @RequiredArgsConstructor
 public class RestaurantUseCase implements IRestaurantServicePort {
@@ -41,5 +43,10 @@ public class RestaurantUseCase implements IRestaurantServicePort {
     @Override
     public Restaurant findRestaurantById(Long id) {
         return restaurantPersistencePort.findById(id);
+    }
+
+    @Override
+    public Page<Restaurant> findAllRestaurants(Pageable pageable) {
+        return restaurantPersistencePort.findAll(pageable);
     }
 }

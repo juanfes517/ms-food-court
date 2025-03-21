@@ -8,11 +8,15 @@ import com.pragma.foodcourt.domain.helper.constants.ExceptionConstants;
 import com.pragma.foodcourt.domain.model.Restaurant;
 import com.pragma.foodcourt.domain.spi.IRestaurantPersistencePort;
 import com.pragma.foodcourt.domain.spi.IUserExternalServicePort;
+import com.pragma.foodcourt.infrastructure.out.jpa.entity.RestaurantEntity;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.*;
+
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
@@ -189,5 +193,43 @@ class RestaurantUseCaseTest {
         assertEquals(restaurant.getLogoUrl(), result.getLogoUrl());
         assertEquals(restaurant.getNit(), result.getNit());
         assertEquals(restaurant.getOwnerId(), result.getOwnerId());
+    }
+
+    @Test
+    void findAll_whenIsSuccessful() {
+        Pageable pageable = PageRequest.of(0, 5, Sort.by(Sort.Direction.ASC, "name"));
+
+        Restaurant restaurant1 = Restaurant.builder()
+                .id(1L)
+                .name("Restaurant Name 1")
+                .nit("12344567")
+                .address("Restaurant Address")
+                .cellPhoneNumber("+573005698325")
+                .logoUrl("Restaurant Logo")
+                .ownerId(1L)
+                .build();
+
+        Restaurant restaurant2 = Restaurant.builder()
+                .id(2L)
+                .name("Restaurant Name 1")
+                .nit("123123123")
+                .address("Restaurant Address")
+                .cellPhoneNumber("+573005698325")
+                .logoUrl("Restaurant Logo")
+                .ownerId(1L)
+                .build();
+
+        List<Restaurant> restaurants = List.of(restaurant1, restaurant2);
+        Page<Restaurant> restaurantsPage = new PageImpl<>(restaurants, pageable, restaurants.size());
+
+        when(restaurantPersistencePort.findAll(pageable))
+                .thenReturn(restaurantsPage);
+
+        Page<Restaurant> result = restaurantPersistencePort.findAll(pageable);
+
+        assertNotNull(result);
+        assertEquals(2, result.getTotalElements());
+        assertEquals(restaurant1.getId(), result.getContent().get(0).getId());
+        assertEquals(restaurant2.getId(), result.getContent().get(1).getId());
     }
 }
