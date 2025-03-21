@@ -37,15 +37,7 @@ public class DishUseCase implements IDishServicePort {
 
     @Override
     public Dish updateDish(Long dishId, Integer price, String description) {
-        Dish dish = dishPersistencePort.findById(dishId);
-        String tokenEmail = jwtSecurityServicePort.getSubject();
-        Long restaurantOwnerId = dish.getRestaurant().getOwnerId();
-
-        boolean isUserTheRestaurantOwner = userExternalServicePort.userHasEmail(restaurantOwnerId, tokenEmail);
-
-        if (!isUserTheRestaurantOwner) {
-            throw new InvalidRestaurantOwnerException(ExceptionConstants.INVALID_RESTAURANT_OWNER_MESSAGE);
-        }
+        Dish dish = this.verifyTheRestaurantOwner(dishId);
         
         if (price != null) {
             dish.setPrice(price);
@@ -64,9 +56,23 @@ public class DishUseCase implements IDishServicePort {
 
     @Override
     public Dish updateDishStatus(Long dishId, boolean status) {
-        Dish dish = dishPersistencePort.findById(dishId);
+        Dish dish = this.verifyTheRestaurantOwner(dishId);
         dish.setActive(status);
 
         return dishPersistencePort.save(dish);
+    }
+
+    private Dish verifyTheRestaurantOwner(Long dishId) {
+        Dish dish = dishPersistencePort.findById(dishId);
+        String tokenEmail = jwtSecurityServicePort.getSubject();
+        Long restaurantOwnerId = dish.getRestaurant().getOwnerId();
+
+        boolean isUserTheRestaurantOwner = userExternalServicePort.userHasEmail(restaurantOwnerId, tokenEmail);
+
+        if (!isUserTheRestaurantOwner) {
+            throw new InvalidRestaurantOwnerException(ExceptionConstants.INVALID_RESTAURANT_OWNER_MESSAGE);
+        }
+
+        return dish;
     }
 }
