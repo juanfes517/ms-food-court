@@ -325,4 +325,80 @@ class DishUseCaseTest {
 
         assertEquals(ExceptionConstants.INVALID_RESTAURANT_OWNER_MESSAGE, result.getMessage());
     }
+
+    @Test
+    void updateDishStatus_WhenIsSuccessful() {
+        Long dishId = 1L;
+        boolean oldStatus = true;
+        boolean newStatus = !oldStatus;
+
+        Dish dish = Dish.builder()
+                .id(dishId)
+                .name("Dish name")
+                .category(new Category())
+                .description("Dish description")
+                .price(5)
+                .restaurant(new Restaurant())
+                .imageUrl("Image Url")
+                .active(oldStatus)
+                .build();
+
+        Dish updatedDish = Dish.builder()
+                .id(dishId)
+                .name("Dish name")
+                .category(new Category())
+                .description("Dish description")
+                .price(5)
+                .restaurant(new Restaurant())
+                .imageUrl("Image Url")
+                .active(newStatus)
+                .build();
+
+        String tokenEmail = "test@mail.com";
+        Long restaurantOwnerId = dish.getRestaurant().getOwnerId();
+
+        when(jwtServiceUtils.getSubject())
+                .thenReturn(tokenEmail);
+        when(userExternalServicePort.userHasEmail(restaurantOwnerId, tokenEmail))
+                .thenReturn(true);
+        when(dishPersistencePort.findById(dishId))
+                .thenReturn(dish);
+        when(dishPersistencePort.save(dish))
+                .thenReturn(updatedDish);
+
+        Dish result = dishUseCase.updateDishStatus(dishId, oldStatus);
+
+        assertNotNull(result);
+        assertEquals(updatedDish.isActive(), result.isActive());
+    }
+
+    @Test
+    void updateDishStatus_WhenThrowInvalidRestaurantOwnerException() {
+        Long dishId = 1L;
+
+        Dish dish = Dish.builder()
+                .id(dishId)
+                .name("Dish name")
+                .category(new Category())
+                .description("Dish description")
+                .price(5)
+                .restaurant(new Restaurant())
+                .imageUrl("Image Url")
+                .active(true)
+                .build();
+
+        String tokenEmail = "test@mail.com";
+        Long restaurantOwnerId = dish.getRestaurant().getOwnerId();
+
+        when(jwtServiceUtils.getSubject())
+                .thenReturn(tokenEmail);
+        when(userExternalServicePort.userHasEmail(restaurantOwnerId, tokenEmail))
+                .thenReturn(false);
+        when(dishPersistencePort.findById(dishId))
+                .thenReturn(dish);
+
+        InvalidRestaurantOwnerException result = assertThrows(InvalidRestaurantOwnerException.class, () -> dishUseCase.updateDishStatus(dishId, false));
+
+        assertEquals(ExceptionConstants.INVALID_RESTAURANT_OWNER_MESSAGE, result.getMessage());
+    }
 }

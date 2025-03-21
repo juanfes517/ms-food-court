@@ -48,4 +48,14 @@ public class DishController {
     public ResponseEntity<DishResponseDto> updateDish(@Valid @RequestBody UpdateDishRequestDto requestDto) {
         return ResponseEntity.ok(dishHandler.updateDish(requestDto));
     }
+
+    @Operation(summary = ApiConstants.UPDATE_DISH_STATUS_DESCRIPTION)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = ApiConstants.OK_DESCRIPTION, content = @Content),
+            @ApiResponse(responseCode = "404", description = ApiConstants.NOT_FOUND_DESCRIPTION, content = @Content)
+    })
+    @PatchMapping("/{dish-id}/status")
+    public ResponseEntity<DishResponseDto> updateDishStatus(@PathVariable("dish-id") Long dishId, @RequestParam boolean status) {
+        return ResponseEntity.ok(dishHandler.updateDishStatus(dishId, status));
+    }
 }

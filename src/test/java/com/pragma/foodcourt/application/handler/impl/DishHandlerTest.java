@@ -252,4 +252,47 @@ class DishHandlerTest {
         assertEquals(updateDishRequestDto.getPrice(), result.getPrice());
         assertEquals(updateDishRequestDto.getDescription(), result.getDescription());
     }
+
+    @Test
+    void updateDishStatus_WhenIsSuccessful() {
+        Long dishId = 1L;
+        boolean status = true;
+
+        Dish savedDish = Dish.builder()
+                .id(dishId)
+                .name("Dish name")
+                .category(new Category())
+                .description("Dish description")
+                .price(5)
+                .restaurant(new Restaurant())
+                .imageUrl("Image Url")
+                .active(status)
+                .build();
+
+        DishResponseDto mappedDish = DishResponseDto.builder()
+                .id(dishId)
+                .name("Dish name")
+                .category(new CategoryResponseDto())
+                .description("Dish description")
+                .price(5)
+                .restaurant(new RestaurantResponseDto())
+                .imageUrl("Image Url")
+                .active(status)
+                .build();
+
+        when(dishServicePort.updateDishStatus(dishId, status))
+                .thenReturn(savedDish);
+        when(modelMapper.map(savedDish, DishResponseDto.class))
+                .thenReturn(mappedDish);
+
+        DishResponseDto result = dishHandler.updateDishStatus(dishId, status);
+
+        assertNotNull(result);
+        assertEquals(mappedDish.getId(), result.getId());
+        assertEquals(mappedDish.getName(), result.getName());
+        assertEquals(mappedDish.getDescription(), result.getDescription());
+        assertEquals(mappedDish.getPrice(), result.getPrice());
+        assertEquals(mappedDish.getImageUrl(), result.getImageUrl());
+        assertEquals(mappedDish.isActive(), result.isActive());
+    }
 }
