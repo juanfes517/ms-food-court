@@ -12,6 +12,8 @@ import com.pragma.foodcourt.domain.model.Dish;
 import com.pragma.foodcourt.domain.model.Restaurant;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -59,5 +61,11 @@ public class DishHandler implements IDishHandler {
     public DishResponseDto updateDishStatus(Long dishId, boolean status) {
         Dish savedDish = dishServicePort.updateDishStatus(dishId, status);
         return modelMapper.map(savedDish, DishResponseDto.class);
+    }
+
+    @Override
+    public Page<DishResponseDto> findAllDishes(Pageable pageable, String categoryName, Long restaurantId) {
+        Page<Dish> dishes = dishServicePort.findAllDishes(pageable, categoryName, restaurantId);
+        return dishes.map(dish -> modelMapper.map(dish, DishResponseDto.class));
     }
 }

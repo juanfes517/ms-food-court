@@ -14,6 +14,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
@@ -400,5 +406,35 @@ class DishUseCaseTest {
         InvalidRestaurantOwnerException result = assertThrows(InvalidRestaurantOwnerException.class, () -> dishUseCase.updateDishStatus(dishId, false));
 
         assertEquals(ExceptionConstants.INVALID_RESTAURANT_OWNER_MESSAGE, result.getMessage());
+    }
+
+    @Test
+    void findAllDishes_WhenIsSuccessful() {
+        Pageable pageable = PageRequest.of(0, 10);
+        String categoryName = "Category name";
+        Long restaurantId = 1L;
+
+        Dish dish = Dish.builder()
+                .id(1L)
+                .name("Dish name")
+                .category(new Category(1L, categoryName, null))
+                .description("Dish description")
+                .price(5)
+                .restaurant(Restaurant.builder().id(restaurantId).build())
+                .imageUrl("Image Url")
+                .active(true)
+                .build();
+
+        List<Dish> dishes = List.of(dish);
+        Page<Dish> dishPage = new PageImpl<>(dishes, pageable, dishes.size());
+
+        when(dishPersistencePort.findAll(pageable, categoryName, restaurantId))
+                .thenReturn(dishPage);
+
+        Page<Dish> result = dishUseCase.findAllDishes(pageable, categoryName, restaurantId);
+
+        assertNotNull(result);
+        assertEquals(dishPage.getTotalElements(), result.getTotalElements());
+        assertEquals(dishPage.getTotalPages(), result.getTotalPages());
     }
 }

@@ -29,7 +29,8 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(http -> {
                     http.requestMatchers(SecurityConstants.getPublicEndpoints()).permitAll();
                     http.requestMatchers(HttpMethod.POST, SecurityConstants.getAdminEndpoints()).hasRole(SecurityConstants.ADMIN_ROLE);
-                    http.requestMatchers(SecurityConstants.getOwnerEndpoints()).hasRole(SecurityConstants.OWNER_ROLE);
+                    http.requestMatchers(HttpMethod.POST, SecurityConstants.getOwnerEndpoints()).hasRole(SecurityConstants.OWNER_ROLE);
+                    http.requestMatchers(HttpMethod.PATCH, SecurityConstants.getOwnerEndpoints()).hasRole(SecurityConstants.OWNER_ROLE);
                     http.requestMatchers(HttpMethod.GET, SecurityConstants.getCustomerEndpoints()).hasRole(SecurityConstants.CUSTOMER_ROLE);
                     http.anyRequest().authenticated();
                 })

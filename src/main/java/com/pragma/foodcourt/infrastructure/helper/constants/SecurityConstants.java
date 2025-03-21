@@ -24,7 +24,8 @@ public class SecurityConstants {
     };
 
     private static final String[] CUSTOMER_ENDPOINTS = {
-            "/api/v1/restaurants"
+            "/api/v1/restaurants",
+            "/api/v1/dishes"
     };
 
     public static String[] getPublicEndpoints() {

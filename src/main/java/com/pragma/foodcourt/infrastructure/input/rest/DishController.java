@@ -11,6 +11,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -57,5 +60,19 @@ public class DishController {
     @PatchMapping("/{dish-id}/status")
     public ResponseEntity<DishResponseDto> updateDishStatus(@PathVariable("dish-id") Long dishId, @RequestParam boolean status) {
         return ResponseEntity.ok(dishHandler.updateDishStatus(dishId, status));
+    }
+
+    @Operation(summary = ApiConstants.GET_ALL_DISHES_DESCRIPTION)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = ApiConstants.OK_DESCRIPTION, content = @Content)
+    })
+    @GetMapping
+    public ResponseEntity<Page<DishResponseDto>> findAllDishes(
+            @RequestParam Integer page,
+            @RequestParam Integer size,
+            @RequestParam Long restaurantId,
+            @RequestParam(required = false) String categoryName) {
+        Pageable pageable = PageRequest.of(page, size);
+        return ResponseEntity.ok(dishHandler.findAllDishes(pageable, categoryName, restaurantId));
     }
 }

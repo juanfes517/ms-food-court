@@ -4,6 +4,7 @@ import com.pragma.foodcourt.application.dto.request.CreateDishRequestDto;
 import com.pragma.foodcourt.application.dto.request.UpdateDishRequestDto;
 import com.pragma.foodcourt.application.dto.response.CategoryResponseDto;
 import com.pragma.foodcourt.application.dto.response.DishResponseDto;
+import com.pragma.foodcourt.application.dto.response.RestaurantBasicInfoResponseDto;
 import com.pragma.foodcourt.application.dto.response.RestaurantResponseDto;
 import com.pragma.foodcourt.domain.api.ICategoryServicePort;
 import com.pragma.foodcourt.domain.api.IDishServicePort;
@@ -17,6 +18,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -294,5 +301,50 @@ class DishHandlerTest {
         assertEquals(mappedDish.getPrice(), result.getPrice());
         assertEquals(mappedDish.getImageUrl(), result.getImageUrl());
         assertEquals(mappedDish.isActive(), result.isActive());
+    }
+
+    @Test
+    void findAllDishes_whenIsSuccessful() {
+        String categoryName = "Category";
+        Long restaurantId = 1L;
+
+        Dish dish = Dish.builder()
+                .id(1L)
+                .name("Dish name")
+                .category(new Category(1L, categoryName, null))
+                .description("Dish description")
+                .price(5)
+                .restaurant(Restaurant.builder().id(restaurantId).build())
+                .imageUrl("Image Url")
+                .active(true)
+                .build();
+
+        DishResponseDto dishResponseDto = DishResponseDto.builder()
+                .id(1L)
+                .name("Dish name")
+                .category(new CategoryResponseDto(1L, categoryName, null))
+                .description("Dish description")
+                .price(5)
+                .restaurant(RestaurantResponseDto.builder().id(restaurantId).build())
+                .imageUrl("Image Url")
+                .active(true)
+                .build();
+
+        Pageable pageable = PageRequest.of(0, 10);
+        List<Dish> dishes = List.of(dish);
+        Page<Dish> dishPage = new PageImpl<>(dishes, pageable, dishes.size());
+
+        when(dishServicePort.findAllDishes(pageable, categoryName, restaurantId))
+                .thenReturn(dishPage);
+        when(modelMapper.map(dish, DishResponseDto.class))
+                .thenReturn(dishResponseDto);
+
+        Page<DishResponseDto> result = dishHandler.findAllDishes(pageable, categoryName, restaurantId);
+
+        assertNotNull(result);
+        assertEquals(1, result.getTotalElements());
+        assertEquals(dishPage.getContent().get(0).getName(), result.getContent().get(0).getName());
+        assertEquals(dishPage.getContent().get(0).getCategory().getName(), result.getContent().get(0).getCategory().getName());
+        assertEquals(dishPage.getContent().get(0).getRestaurant().getId(), result.getContent().get(0).getRestaurant().getId());
     }
 }

@@ -9,6 +9,8 @@ import com.pragma.foodcourt.domain.spi.IDishPersistencePort;
 import com.pragma.foodcourt.domain.spi.IJwtSecurityServicePort;
 import com.pragma.foodcourt.domain.spi.IUserExternalServicePort;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 @RequiredArgsConstructor
 public class DishUseCase implements IDishServicePort {
@@ -60,6 +62,11 @@ public class DishUseCase implements IDishServicePort {
         dish.setActive(status);
 
         return dishPersistencePort.save(dish);
+    }
+
+    @Override
+    public Page<Dish> findAllDishes(Pageable pageable, String categoryName, Long restaurantId) {
+        return dishPersistencePort.findAll(pageable, categoryName, restaurantId);
     }
 
     private Dish verifyTheRestaurantOwner(Long dishId) {
