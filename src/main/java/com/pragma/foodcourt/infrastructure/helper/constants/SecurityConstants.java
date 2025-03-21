@@ -18,7 +18,8 @@ public class SecurityConstants {
     };
 
     private static final String[] OWNER_ENDPOINTS = {
-            "/api/v1/dishes"
+            "/api/v1/dishes",
+            "/api/v1/employee-assignment"
     };
 
     public static String[] getPublicEndpoints() {

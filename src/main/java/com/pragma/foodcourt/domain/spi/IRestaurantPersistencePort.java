@@ -7,4 +7,6 @@ public interface IRestaurantPersistencePort {
     Restaurant save(Restaurant restaurant);
 
     Restaurant findById(Long id);
+
+    Restaurant findByOwnerId(Long ownerId);
 }

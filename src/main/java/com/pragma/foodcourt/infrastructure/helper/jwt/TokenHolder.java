@@ -2,17 +2,20 @@ package com.pragma.foodcourt.infrastructure.helper.jwt;
 
 public class TokenHolder {
 
-    private static final ThreadLocal<String> tokenHolder = new ThreadLocal<>();
+    private TokenHolder() {
+    }
+
+    private static final ThreadLocal<String> accessToken = new ThreadLocal<>();
 
     public static void setToken(String token) {
-        tokenHolder.set(token);
+        accessToken.set(token);
     }
 
     public static String getToken() {
-        return tokenHolder.get();
+        return accessToken.get();
     }
 
     public static void clear() {
-        tokenHolder.remove();
+        accessToken.remove();
     }
 }

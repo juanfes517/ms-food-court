@@ -6,6 +6,7 @@ public class ApiConstants {
 
     public static final String SAVE_RESTAURANT_DESCRIPTION = "Save a new restaurant";
     public static final String SAVE_DISH_DESCRIPTION = "Save a new dish";
+    public static final String ASSIGN_EMPLOYEE_TO_RESTAURANT_DESCRIPTION = "Assign a new employee to a restaurant";
     public static final String UPDATE_DISH_DESCRIPTION = "Update a existing dish";
     public static final String OK_DESCRIPTION = "Request successful";
     public static final String OBJECT_CREATED_DESCRIPTION = "Object created";
