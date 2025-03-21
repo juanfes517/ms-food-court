@@ -11,7 +11,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.*;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -190,4 +192,43 @@ class RestaurantJpaAdapterTest {
         assertEquals(ExceptionConstants.RESTAURANT_NOT_FOUND, restaurantNotFoundException.getMessage());
     }
 
+    @Test
+    void findAll_whenIsSuccessful() {
+        Pageable pageable = PageRequest.of(0, 5, Sort.by(Sort.Direction.ASC, "name"));
+
+        RestaurantEntity restaurantEntity = RestaurantEntity.builder()
+                .id(1L)
+                .name("Restaurant Name")
+                .nit("12344567")
+                .address("Restaurant Address")
+                .cellPhoneNumber("+573005698325")
+                .logoUrl("Restaurant Logo")
+                .ownerId(1L)
+                .build();
+
+        Restaurant mappedRestaurant = Restaurant.builder()
+                .id(1L)
+                .name("Restaurant Name")
+                .nit("12344567")
+                .address("Restaurant Address")
+                .cellPhoneNumber("+573005698325")
+                .logoUrl("Restaurant Logo")
+                .ownerId(1L)
+                .build();
+
+        List<RestaurantEntity> entityList = List.of(restaurantEntity);
+        Page<RestaurantEntity> entityPage = new PageImpl<>(entityList, pageable, entityList.size());
+
+        when(restaurantRepository.findAll(pageable))
+                .thenReturn(entityPage);
+        when(modelMapper.map(restaurantEntity, Restaurant.class))
+                .thenReturn(mappedRestaurant);
+
+        Page<Restaurant> result = restaurantJpaAdapter.findAll(pageable);
+
+        assertNotNull(result);
+        assertEquals(1, result.getTotalElements());
+        assertEquals(mappedRestaurant.getId(), result.getContent().get(0).getId());
+        assertEquals(mappedRestaurant.getName(), result.getContent().get(0).getName());
+    }
 }
