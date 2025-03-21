@@ -9,15 +9,24 @@ import com.pragma.foodcourt.infrastructure.out.jpa.entity.CategoryEntity;
 import com.pragma.foodcourt.infrastructure.out.jpa.entity.DishEntity;
 import com.pragma.foodcourt.infrastructure.out.jpa.entity.RestaurantEntity;
 import com.pragma.foodcourt.infrastructure.out.jpa.repository.DishRepository;
+import com.pragma.foodcourt.infrastructure.out.jpa.specification.IDishSpecification;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 
+import java.util.List;
 import java.util.Optional;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
@@ -32,6 +41,9 @@ class DishJpaAdapterTest {
 
     @Mock
     private ModelMapper modelMapper;
+
+    @Mock
+    private IDishSpecification dishSpecification;
 
     @Test
     void save_WhenIsSuccessful() {
@@ -178,5 +190,57 @@ class DishJpaAdapterTest {
         DishNotFoundException result = assertThrows(DishNotFoundException.class, () -> dishJpaAdapter.findById(id));
 
         assertEquals(ExceptionConstants.DISH_NOT_FOUND, result.getMessage());
+    }
+
+    @Test
+    void findAll_WhenIsSuccessful() {
+        Specification<DishEntity> specification = Specification.where(null);
+        Pageable pageable = PageRequest.of(0, 5);
+        String categoryName = "category name";
+        Long restaurantId = 1L;
+
+        DishEntity dishEntity = DishEntity.builder()
+                .id(1L)
+                .name("dish name")
+                .category(new CategoryEntity(1L, categoryName, "description"))
+                .description("dish description")
+                .price(5)
+                .restaurant(RestaurantEntity.builder().id(restaurantId).build())
+                .imageUrl("image URL")
+                .active(true)
+                .build();
+
+        Dish dish = Dish.builder()
+                .id(1L)
+                .name("dish name")
+                .category(new Category(1L, categoryName, "description"))
+                .description("dish description")
+                .price(5)
+                .restaurant(Restaurant.builder().id(restaurantId).build())
+                .imageUrl("image URL")
+                .active(true)
+                .build();
+
+        List<DishEntity> dishEntities = List.of(dishEntity);
+        Page<DishEntity> dishEntityPage = new PageImpl<>(dishEntities, pageable, dishEntities.size());
+
+        when(dishSpecification.hasRestaurant(restaurantId))
+                .thenReturn(specification);
+        when(dishSpecification.hasCategory(categoryName))
+                .thenReturn(specification);
+        when(dishRepository.findAll(any(Specification.class), eq(pageable)))
+                .thenReturn(dishEntityPage);
+        when(modelMapper.map(dishEntity, Dish.class))
+                .thenReturn(dish);
+
+        Page<Dish> result = dishJpaAdapter.findAll(pageable, categoryName, restaurantId);
+
+        assertNotNull(result);
+        assertEquals(dish.getId(), result.getContent().get(0).getId());
+        assertEquals(dish.getName(), result.getContent().get(0).getName());
+        assertEquals(dish.getDescription(), result.getContent().get(0).getDescription());
+        assertEquals(dish.getPrice(), result.getContent().get(0).getPrice());
+        assertEquals(dish.getImageUrl(), result.getContent().get(0).getImageUrl());
+
     }
 }
