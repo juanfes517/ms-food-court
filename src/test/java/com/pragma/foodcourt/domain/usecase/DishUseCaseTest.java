@@ -325,4 +325,43 @@ class DishUseCaseTest {
 
         assertEquals(ExceptionConstants.INVALID_RESTAURANT_OWNER_MESSAGE, result.getMessage());
     }
+
+    @Test
+    void updateDishStatus_WhenIsSuccessful() {
+        Long dishId = 1L;
+        boolean oldStatus = true;
+        boolean newStatus = !oldStatus;
+
+        Dish dish = Dish.builder()
+                .id(dishId)
+                .name("Dish name")
+                .category(new Category())
+                .description("Dish description")
+                .price(5)
+                .restaurant(new Restaurant())
+                .imageUrl("Image Url")
+                .active(oldStatus)
+                .build();
+
+        Dish updatedDish = Dish.builder()
+                .id(dishId)
+                .name("Dish name")
+                .category(new Category())
+                .description("Dish description")
+                .price(5)
+                .restaurant(new Restaurant())
+                .imageUrl("Image Url")
+                .active(newStatus)
+                .build();
+
+        when(dishPersistencePort.findById(dishId))
+                .thenReturn(dish);
+        when(dishPersistencePort.save(dish))
+                .thenReturn(updatedDish);
+
+        Dish result = dishUseCase.updateDishStatus(dishId, oldStatus);
+
+        assertNotNull(result);
+        assertEquals(updatedDish.isActive(), result.isActive());
+    }
 }
