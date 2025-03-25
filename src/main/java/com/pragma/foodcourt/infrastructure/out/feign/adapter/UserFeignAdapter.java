@@ -20,4 +20,9 @@ public class UserFeignAdapter implements IUserExternalServicePort {
     public boolean userHasEmail(Long userId, String email) {
         return userFeignClient.userHasEmail(userId, email);
     }
+
+    @Override
+    public Long getUserIdByEmail(String email) {
+        return userFeignClient.getUserIdByEmail(email);
+    }
 }
