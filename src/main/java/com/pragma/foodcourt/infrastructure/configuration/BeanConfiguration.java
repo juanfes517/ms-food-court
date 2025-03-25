@@ -1,16 +1,10 @@
 package com.pragma.foodcourt.infrastructure.configuration;
 
 import com.pragma.foodcourt.application.dto.request.RestaurantRequestDto;
-import com.pragma.foodcourt.domain.api.ICategoryServicePort;
-import com.pragma.foodcourt.domain.api.IDishServicePort;
-import com.pragma.foodcourt.domain.api.IEmployeeAssignmentServicePort;
-import com.pragma.foodcourt.domain.api.IRestaurantServicePort;
+import com.pragma.foodcourt.domain.api.*;
 import com.pragma.foodcourt.domain.model.Restaurant;
 import com.pragma.foodcourt.domain.spi.*;
-import com.pragma.foodcourt.domain.usecase.CategoryUseCase;
-import com.pragma.foodcourt.domain.usecase.DishUseCase;
-import com.pragma.foodcourt.domain.usecase.EmployeeAssignmentUseCase;
-import com.pragma.foodcourt.domain.usecase.RestaurantUseCase;
+import com.pragma.foodcourt.domain.usecase.*;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
 import org.springframework.context.annotation.Bean;
@@ -57,5 +51,20 @@ public class BeanConfiguration {
             IRestaurantPersistencePort restaurantPersistencePort,
             IEmployeeAssignmentPersistencePort employeeAssignmentPersistencePort) {
         return new EmployeeAssignmentUseCase(restaurantPersistencePort, employeeAssignmentPersistencePort);
+    }
+
+    @Bean
+    public IOrderDishServicePort orderDishService(
+            IOrderDishPersistencePort orderDishPersistencePort,
+            IDishPersistencePort dishPersistencePort) {
+        return new OrderDishUseCase(orderDishPersistencePort, dishPersistencePort);
+    }
+
+    @Bean
+    public IOrderServicePort orderService(
+            IUserExternalServicePort userExternalServicePort,
+            IOrderPersistencePort orderPersistencePort,
+            IJwtSecurityServicePort jwtSecurityServicePort) {
+        return new OrderUseCase(userExternalServicePort, orderPersistencePort, jwtSecurityServicePort);
     }
 }
