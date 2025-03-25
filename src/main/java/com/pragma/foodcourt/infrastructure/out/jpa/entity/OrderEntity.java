@@ -28,7 +28,7 @@ public class OrderEntity {
     @Column(nullable = false)
     private OrderStatusEnum status;
 
-    @Column(nullable = false, name = "chef_id")
+    @Column(name = "chef_id")
     private Long chefId;
 
     @Column(nullable = false, name = "restaurant_id")
