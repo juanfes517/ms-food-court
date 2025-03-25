@@ -13,4 +13,8 @@ public class OrderDish {
     private Order order;
     private Dish dish;
     private int quantity;
+
+    public boolean isValidQuantity() {
+        return this.quantity > 0;
+    }
 }

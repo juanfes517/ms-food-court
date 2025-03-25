@@ -1,5 +1,7 @@
 package com.pragma.foodcourt.domain.usecase;
 
+import com.pragma.foodcourt.domain.exception.InvalidDishQuantityException;
+import com.pragma.foodcourt.domain.helper.constants.ExceptionConstants;
 import com.pragma.foodcourt.domain.model.*;
 import com.pragma.foodcourt.domain.spi.IDishPersistencePort;
 import com.pragma.foodcourt.domain.spi.IOrderDishPersistencePort;
@@ -71,5 +73,22 @@ class OrderDishUseCaseTest {
         assertEquals(savedOrderDish.getQuantity(), result.getQuantity());
         assertEquals(savedOrderDish.getDish(), result.getDish());
         assertEquals(savedOrderDish.getOrder(), result.getOrder());
+    }
+
+    @Test
+    void save_WhenTrowInvalidDishQuantityException() {
+        int quantity = -1;
+        Long dishId = 1L;
+
+        Dish dish = new Dish();
+
+        when(dishPersistencePort.findById(dishId))
+                .thenReturn(dish);
+
+        InvalidDishQuantityException result = assertThrows(
+                InvalidDishQuantityException.class, () -> orderDishUseCase.save(new Order(), quantity, dishId));
+
+        assertNotNull(result);
+        assertEquals(ExceptionConstants.INVALID_DISH_QUANTITY_EXCEPTION, result.getMessage());
     }
 }
