@@ -18,4 +18,6 @@ public class DtoConstants {
     public static final String DISH_ID_CANNOT_BE_BLANK = "The dish ID cannot be blank";
     public static final String CATEGORY_CANNOT_BE_BLANK = "The category cannot be blank";
     public static final String RESTAURANT_ID_CANNOT_BE_BLANK = "The restaurant ID cannot be blank";
+    public static final String QUANTITY_CANNOT_BE_BLANK = "The dish quantity cannot be blank";
+    public static final String LIST_OF_DISHES_CANNOT_BE_BLANK = "The list of dishes cannot be blank";
 }
