@@ -15,4 +15,5 @@ public class ExceptionConstants {
     public static final String CUSTOMER_HAS_ACTIVE_ORDER_EXCEPTION = "The customer already has an active order and cannot place a new one.";
     public static final String INVALID_DISH_QUANTITY_EXCEPTION = "The dish quantity must be a positive number greater than 0";
     public static final String INVALID_DISH_RESTAURANT_EXCEPTION = "The dish does not belong to the restaurant";
+    public static final String ORDER_NOT_FROM_EMPLOYEE_RESTAURANT_EXCEPTION = "The order does not belong to the employee's restaurant";
 }
