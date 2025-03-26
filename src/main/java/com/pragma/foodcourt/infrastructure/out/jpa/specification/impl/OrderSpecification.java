@@ -18,6 +18,6 @@ public class OrderSpecification implements IOrderSpecification {
     @Override
     public Specification<OrderEntity> hasRestaurantId(Long restaurantId) {
         return ((root, query, criteriaBuilder) ->
-                criteriaBuilder.equal(root.get("restaurant"), restaurantId));
+                criteriaBuilder.equal(root.get("restaurantId"), restaurantId));
     }
 }
