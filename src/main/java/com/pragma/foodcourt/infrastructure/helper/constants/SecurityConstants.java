@@ -23,9 +23,13 @@ public class SecurityConstants {
             "/api/v1/employee-assignment"
     };
 
-    private static final String[] CUSTOMER_ENDPOINTS = {
+    private static final String[] CUSTOMER_GET_ENDPOINTS = {
             "/api/v1/restaurants",
             "/api/v1/dishes"
+    };
+
+    private static final String[] CUSTOMER_POST_ENDPOINTS = {
+            "/api/v1/orders"
     };
 
     public static String[] getPublicEndpoints() {
@@ -40,7 +44,11 @@ public class SecurityConstants {
         return OWNER_ENDPOINTS.clone();
     }
 
-    public static String[] getCustomerEndpoints() {
-        return CUSTOMER_ENDPOINTS.clone();
+    public static String[] getCustomerGetEndpoints() {
+        return CUSTOMER_GET_ENDPOINTS.clone();
+    }
+
+    public static String[] getCustomerPostEndpoints() {
+        return CUSTOMER_POST_ENDPOINTS.clone();
     }
 }
