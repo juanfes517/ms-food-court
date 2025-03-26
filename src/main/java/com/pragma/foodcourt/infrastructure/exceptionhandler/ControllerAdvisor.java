@@ -152,6 +152,16 @@ public class ControllerAdvisor {
                 .build();
     }
 
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(InvalidDishRestaurantException.class)
+    public ExceptionResponseDto handleInvalidDishRestaurantException(InvalidDishRestaurantException e) {
+        log.error(e.getMessage());
+        return ExceptionResponseDto.builder()
+                .message(e.getMessage())
+                .timestamp(LocalDateTime.now())
+                .build();
+    }
+
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(DishNotFoundException.class)
     public ExceptionResponseDto handleDishNotFoundException(DishNotFoundException e) {

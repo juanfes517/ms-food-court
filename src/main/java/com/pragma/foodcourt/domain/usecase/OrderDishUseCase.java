@@ -2,6 +2,7 @@ package com.pragma.foodcourt.domain.usecase;
 
 import com.pragma.foodcourt.domain.api.IOrderDishServicePort;
 import com.pragma.foodcourt.domain.exception.InvalidDishQuantityException;
+import com.pragma.foodcourt.domain.exception.InvalidDishRestaurantException;
 import com.pragma.foodcourt.domain.helper.constants.ExceptionConstants;
 import com.pragma.foodcourt.domain.model.Dish;
 import com.pragma.foodcourt.domain.model.Order;
@@ -26,10 +27,21 @@ public class OrderDishUseCase implements IOrderDishServicePort {
                 .quantity(quantity)
                 .build();
 
+        this.validateDishQuantity(orderDish);
+        this.validateDishRestaurant(dish, order.getRestaurantId());
+
+        return orderDishPersistencePort.save(orderDish);
+    }
+
+    private void validateDishQuantity(OrderDish orderDish) {
         if (!orderDish.isValidQuantity()) {
             throw new InvalidDishQuantityException(ExceptionConstants.INVALID_DISH_QUANTITY_EXCEPTION);
         }
+    }
 
-        return orderDishPersistencePort.save(orderDish);
+    private void validateDishRestaurant(Dish dish, Long restaurantId) {
+        if (!dish.getRestaurant().getId().equals(restaurantId)) {
+            throw new InvalidDishRestaurantException(ExceptionConstants.INVALID_DISH_RESTAURANT_EXCEPTION);
+        }
     }
 }
