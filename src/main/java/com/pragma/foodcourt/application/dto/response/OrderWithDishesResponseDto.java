@@ -11,7 +11,7 @@ import java.util.List;
 @Setter
 @Getter
 @Builder
-public class OrderResponseDto {
+public class OrderWithDishesResponseDto {
 
     private Long id;
     private LocalDate date;
