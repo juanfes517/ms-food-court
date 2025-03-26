@@ -162,6 +162,16 @@ public class ControllerAdvisor {
                 .build();
     }
 
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(InvalidOrderStatusException.class)
+    public ExceptionResponseDto handleInvalidOrderStatusException(InvalidOrderStatusException e) {
+        log.error(e.getMessage());
+        return ExceptionResponseDto.builder()
+                .message(e.getMessage())
+                .timestamp(LocalDateTime.now())
+                .build();
+    }
+
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(DishNotFoundException.class)
     public ExceptionResponseDto handleDishNotFoundException(DishNotFoundException e) {
@@ -175,6 +185,16 @@ public class ControllerAdvisor {
     @ResponseStatus(HttpStatus.FORBIDDEN)
     @ExceptionHandler(BadCredentialsException.class)
     public ExceptionResponseDto handleBadCredentialsException(BadCredentialsException e) {
+        log.error(e.getMessage());
+        return ExceptionResponseDto.builder()
+                .message(e.getMessage())
+                .timestamp(LocalDateTime.now())
+                .build();
+    }
+
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    @ExceptionHandler(OrderNotFromEmployeeRestaurantException.class)
+    public ExceptionResponseDto handleOrderNotFromEmployeeRestaurantException(OrderNotFromEmployeeRestaurantException e) {
         log.error(e.getMessage());
         return ExceptionResponseDto.builder()
                 .message(e.getMessage())
