@@ -12,4 +12,6 @@ public interface IOrderPersistencePort {
     List<Order> findAllByCustomerId(Long customerId);
 
     List<Order> findAll(int page, int pageSize, OrderStatusEnum status, Long restaurantId);
+
+    Order findById(Long orderId);
 }
