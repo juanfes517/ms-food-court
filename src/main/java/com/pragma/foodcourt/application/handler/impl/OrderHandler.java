@@ -4,6 +4,7 @@ import com.pragma.foodcourt.application.dto.request.DishRequestDto;
 import com.pragma.foodcourt.application.dto.request.OrderRequestDto;
 import com.pragma.foodcourt.application.dto.response.DishOrderResponseDto;
 import com.pragma.foodcourt.application.dto.response.OrderResponseDto;
+import com.pragma.foodcourt.application.dto.response.OrderWithDishesResponseDto;
 import com.pragma.foodcourt.application.handler.IOrderHandler;
 import com.pragma.foodcourt.domain.api.IOrderDishServicePort;
 import com.pragma.foodcourt.domain.api.IOrderServicePort;
@@ -32,7 +33,7 @@ public class OrderHandler implements IOrderHandler {
     private final ModelMapper modelMapper;
 
     @Override
-    public OrderResponseDto placeOrder(OrderRequestDto orderRequest) {
+    public OrderWithDishesResponseDto placeOrder(OrderRequestDto orderRequest) {
         Restaurant restaurant = restaurantServicePort.findRestaurantById(orderRequest.getRestaurantId());
         Order order = Order.builder()
                 .date(LocalDate.now())
@@ -43,7 +44,7 @@ public class OrderHandler implements IOrderHandler {
         Order savedOrder = orderServicePort.placeOrder(order);
         List<DishOrderResponseDto> savedDishes = this.saveDishOrders(orderRequest.getDishes(), savedOrder);
 
-        return OrderResponseDto.builder()
+        return OrderWithDishesResponseDto.builder()
                 .id(savedOrder.getId())
                 .date(savedOrder.getDate())
                 .status(savedOrder.getStatus())
@@ -51,9 +52,16 @@ public class OrderHandler implements IOrderHandler {
                 .build();
     }
 
+    @Override
+    public List<OrderResponseDto> getAllOrders(int page, int pageSize, OrderStatusEnum status) {
+        List<Order> orders = orderServicePort.getAllOrders(page, pageSize, status);
+        return orders.stream()
+                .map(order -> modelMapper.map(order, OrderResponseDto.class))
+                .toList();
+    }
+
     private List<DishOrderResponseDto> saveDishOrders(List<DishRequestDto> dishes, Order savedOrder) {
         List<OrderDish> orderDishes = new ArrayList<>();
-
         dishes.forEach(dish -> {
             OrderDish orderDish = orderDishServicePort.save(savedOrder, dish.getQuantity(), dish.getDishId());
             orderDishes.add(orderDish);
