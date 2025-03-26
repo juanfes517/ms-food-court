@@ -1,6 +1,8 @@
 package com.pragma.foodcourt.domain.usecase;
 
 import com.pragma.foodcourt.domain.exception.CustomerHasActiveOrderException;
+import com.pragma.foodcourt.domain.exception.InvalidOrderStatusException;
+import com.pragma.foodcourt.domain.exception.OrderNotFromEmployeeRestaurantException;
 import com.pragma.foodcourt.domain.helper.constants.ExceptionConstants;
 import com.pragma.foodcourt.domain.model.EmployeeAssignment;
 import com.pragma.foodcourt.domain.model.Order;
@@ -250,5 +252,139 @@ class OrderUseCaseTest {
         assertEquals(orders.get(0).getRestaurantId(), result.get(0).getRestaurantId());
         assertEquals(orders.get(0).getCustomerId(), result.get(0).getCustomerId());
         assertEquals(orders.get(0).getStatus(), result.get(0).getStatus());
+    }
+
+    @Test
+    void assignOrder_WhenIsSuccessful() {
+        Long orderId = 1L;
+        String tokenEmail = "test@email.com";
+        Long employeeId = 1L;
+        Long orderRestaurantId = 1L;
+        Long employeeRestaurantId = 1L;
+
+        Order order = Order.builder()
+                .id(orderId)
+                .customerId(2L)
+                .date(LocalDate.of(2024, 5, 17))
+                .status(OrderStatusEnum.PENDING)
+                .chefId(null)
+                .restaurantId(orderRestaurantId)
+                .build();
+
+        Order updatedOrder = Order.builder()
+                .id(orderId)
+                .customerId(2L)
+                .date(LocalDate.of(2024, 5, 17))
+                .status(OrderStatusEnum.PREPARING)
+                .chefId(employeeId)
+                .restaurantId(orderRestaurantId)
+                .build();
+
+        EmployeeAssignment employeeAssignment = EmployeeAssignment.builder()
+                .id(1L)
+                .employeeId(employeeId)
+                .restaurant(Restaurant.builder().id(employeeRestaurantId).build())
+                .build();
+
+        when(jwtSecurityServicePort.getSubject())
+                .thenReturn(tokenEmail);
+        when(userExternalServicePort.getUserIdByEmail(tokenEmail))
+                .thenReturn(employeeId);
+        when(orderPersistencePort.findById(orderId))
+                .thenReturn(order);
+        when(employeeAssignmentPersistencePort.findByEmployeeId(employeeId))
+                .thenReturn(employeeAssignment);
+        when(orderPersistencePort.save(order))
+                .thenReturn(updatedOrder);
+
+        Order result = orderUseCase.assignOrder(orderId);
+
+        assertNotNull(result);
+        assertEquals(updatedOrder.getRestaurantId(), result.getRestaurantId());
+        assertEquals(updatedOrder.getCustomerId(), result.getCustomerId());
+        assertEquals(updatedOrder.getStatus(), result.getStatus());
+        assertEquals(updatedOrder.getStatus(), result.getStatus());
+        assertEquals(updatedOrder.getChefId(), result.getChefId());
+        assertEquals(updatedOrder.getRestaurantId(), result.getRestaurantId());
+    }
+
+    @Test
+    void assignOrder_WhenThrowOrderNotFromEmployeeRestaurantException() {
+        Long orderId = 1L;
+        String tokenEmail = "test@email.com";
+        Long employeeId = 1L;
+        Long orderRestaurantId = 1L;
+        Long employeeRestaurantId = 2L;
+
+        Order order = Order.builder()
+                .id(orderId)
+                .customerId(2L)
+                .date(LocalDate.of(2024, 5, 17))
+                .status(OrderStatusEnum.PENDING)
+                .chefId(null)
+                .restaurantId(orderRestaurantId)
+                .build();
+
+        EmployeeAssignment employeeAssignment = EmployeeAssignment.builder()
+                .id(1L)
+                .employeeId(employeeId)
+                .restaurant(Restaurant.builder().id(employeeRestaurantId).build())
+                .build();
+
+        when(jwtSecurityServicePort.getSubject())
+                .thenReturn(tokenEmail);
+        when(userExternalServicePort.getUserIdByEmail(tokenEmail))
+                .thenReturn(employeeId);
+        when(orderPersistencePort.findById(orderId))
+                .thenReturn(order);
+        when(employeeAssignmentPersistencePort.findByEmployeeId(employeeId))
+                .thenReturn(employeeAssignment);
+
+        OrderNotFromEmployeeRestaurantException result = assertThrows(OrderNotFromEmployeeRestaurantException.class, () -> {
+            orderUseCase.assignOrder(orderId);
+        });
+
+        assertNotNull(result);
+        assertEquals(ExceptionConstants.ORDER_NOT_FROM_EMPLOYEE_RESTAURANT_EXCEPTION, result.getMessage());
+    }
+
+    @Test
+    void assignOrder_WhenThrowInvalidOrderStatusException() {
+        Long orderId = 1L;
+        String tokenEmail = "test@email.com";
+        Long employeeId = 1L;
+        Long orderRestaurantId = 1L;
+        Long employeeRestaurantId = 1L;
+
+        Order order = Order.builder()
+                .id(orderId)
+                .customerId(2L)
+                .date(LocalDate.of(2024, 5, 17))
+                .status(OrderStatusEnum.PREPARING)
+                .chefId(null)
+                .restaurantId(orderRestaurantId)
+                .build();
+
+        EmployeeAssignment employeeAssignment = EmployeeAssignment.builder()
+                .id(1L)
+                .employeeId(employeeId)
+                .restaurant(Restaurant.builder().id(employeeRestaurantId).build())
+                .build();
+
+        when(jwtSecurityServicePort.getSubject())
+                .thenReturn(tokenEmail);
+        when(userExternalServicePort.getUserIdByEmail(tokenEmail))
+                .thenReturn(employeeId);
+        when(orderPersistencePort.findById(orderId))
+                .thenReturn(order);
+        when(employeeAssignmentPersistencePort.findByEmployeeId(employeeId))
+                .thenReturn(employeeAssignment);
+
+        InvalidOrderStatusException result = assertThrows(InvalidOrderStatusException.class, () -> {
+            orderUseCase.assignOrder(orderId);
+        });
+
+        assertNotNull(result);
+        assertEquals(ExceptionConstants.INVALID_ORDER_STATUS_EXCEPTION, result.getMessage());
     }
 }
