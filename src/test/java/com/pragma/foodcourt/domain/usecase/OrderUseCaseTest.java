@@ -245,7 +245,7 @@ class OrderUseCaseTest {
                 .thenReturn(orders);
 
         List<Order> result = orderUseCase.getAllOrders(page, pageSize, status);
-        
+
         assertEquals(orders.size(), result.size());
         assertEquals(orders.get(0).getRestaurantId(), result.get(0).getRestaurantId());
         assertEquals(orders.get(0).getCustomerId(), result.get(0).getCustomerId());
