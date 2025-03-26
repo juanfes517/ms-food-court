@@ -2,6 +2,8 @@ package com.pragma.foodcourt.domain.usecase;
 
 import com.pragma.foodcourt.domain.api.IOrderServicePort;
 import com.pragma.foodcourt.domain.exception.CustomerHasActiveOrderException;
+import com.pragma.foodcourt.domain.exception.InvalidOrderStatusException;
+import com.pragma.foodcourt.domain.exception.OrderNotFromEmployeeRestaurantException;
 import com.pragma.foodcourt.domain.helper.constants.ExceptionConstants;
 import com.pragma.foodcourt.domain.model.EmployeeAssignment;
 import com.pragma.foodcourt.domain.model.Order;
@@ -40,6 +42,36 @@ public class OrderUseCase implements IOrderServicePort {
         Long restaurantId = this.findEmployeeRestaurantId(employeeId);
 
         return orderPersistencePort.findAll(page, pageSize, status, restaurantId);
+    }
+
+    @Override
+    public Order assignOrder(Long orderId) {
+        String tokenEmail = jwtSecurityServicePort.getSubject();
+        Long employeeId = userExternalServicePort.getUserIdByEmail(tokenEmail);
+        Order order = orderPersistencePort.findById(orderId);
+
+        this.validateOrderRestaurant(order, employeeId);
+        this.validateOrderStatus(order, OrderStatusEnum.PENDING);
+
+        order.setChefId(employeeId);
+        order.setStatus(OrderStatusEnum.PREPARING);
+
+        return orderPersistencePort.save(order);
+    }
+
+    private void validateOrderStatus(Order order, OrderStatusEnum expectedStatus) {
+        OrderStatusEnum actualStatus = order.getStatus();
+        if (actualStatus != expectedStatus) {
+            throw new InvalidOrderStatusException(ExceptionConstants.INVALID_ORDER_STATUS_EXCEPTION);
+        }
+    }
+
+    private void validateOrderRestaurant(Order order, Long employeeId) {
+        Long employeeRestaurantId = this.findEmployeeRestaurantId(employeeId);
+        Long orderRestaurantId = order.getRestaurantId();
+        if (!orderRestaurantId.equals(employeeRestaurantId)) {
+            throw new OrderNotFromEmployeeRestaurantException(ExceptionConstants.ORDER_NOT_FROM_EMPLOYEE_RESTAURANT_EXCEPTION);
+        }
     }
 
     private Long findEmployeeRestaurantId(Long employeeId) {

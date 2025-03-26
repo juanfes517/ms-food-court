@@ -2,10 +2,7 @@ package com.pragma.foodcourt.infrastructure.exceptionhandler;
 
 import com.pragma.foodcourt.application.dto.response.ExceptionResponseDto;
 import com.pragma.foodcourt.domain.exception.*;
-import com.pragma.foodcourt.infrastructure.exception.CategoryNotFoundException;
-import com.pragma.foodcourt.infrastructure.exception.DishNotFoundException;
-import com.pragma.foodcourt.infrastructure.exception.RestaurantNotFoundException;
-import com.pragma.foodcourt.infrastructure.exception.UserNotFoundException;
+import com.pragma.foodcourt.infrastructure.exception.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -132,6 +129,16 @@ public class ControllerAdvisor {
                 .build();
     }
 
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(OrderNotFoundException.class)
+    public ExceptionResponseDto handleOrderNotFoundException(OrderNotFoundException e) {
+        log.error(e.getMessage());
+        return ExceptionResponseDto.builder()
+                .message(e.getMessage())
+                .timestamp(LocalDateTime.now())
+                .build();
+    }
+
     @ResponseStatus(HttpStatus.FORBIDDEN)
     @ExceptionHandler(InvalidRestaurantOwnerException.class)
     public ExceptionResponseDto handleInvalidRestaurantOwnerException(InvalidRestaurantOwnerException e) {
@@ -162,6 +169,16 @@ public class ControllerAdvisor {
                 .build();
     }
 
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(InvalidOrderStatusException.class)
+    public ExceptionResponseDto handleInvalidOrderStatusException(InvalidOrderStatusException e) {
+        log.error(e.getMessage());
+        return ExceptionResponseDto.builder()
+                .message(e.getMessage())
+                .timestamp(LocalDateTime.now())
+                .build();
+    }
+
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(DishNotFoundException.class)
     public ExceptionResponseDto handleDishNotFoundException(DishNotFoundException e) {
@@ -175,6 +192,16 @@ public class ControllerAdvisor {
     @ResponseStatus(HttpStatus.FORBIDDEN)
     @ExceptionHandler(BadCredentialsException.class)
     public ExceptionResponseDto handleBadCredentialsException(BadCredentialsException e) {
+        log.error(e.getMessage());
+        return ExceptionResponseDto.builder()
+                .message(e.getMessage())
+                .timestamp(LocalDateTime.now())
+                .build();
+    }
+
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    @ExceptionHandler(OrderNotFromEmployeeRestaurantException.class)
+    public ExceptionResponseDto handleOrderNotFromEmployeeRestaurantException(OrderNotFromEmployeeRestaurantException e) {
         log.error(e.getMessage());
         return ExceptionResponseDto.builder()
                 .message(e.getMessage())

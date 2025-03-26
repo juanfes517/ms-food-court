@@ -10,4 +10,6 @@ public interface IOrderServicePort {
     Order placeOrder(Order order);
 
     List<Order> getAllOrders(int page, int pageSize, OrderStatusEnum status);
+
+    Order assignOrder(Long orderId);
 }

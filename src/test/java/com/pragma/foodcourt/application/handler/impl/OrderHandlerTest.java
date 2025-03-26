@@ -150,4 +150,43 @@ class OrderHandlerTest {
         assertEquals(responseOrders.get(0).getStatus(), result.get(0).getStatus());
 
     }
+
+    @Test
+    void assignOrder_WhenIsSuccessful() {
+        Long orderId = 1L;
+
+        Order order = Order.builder()
+                .id(orderId)
+                .customerId(2L)
+                .date(LocalDate.of(2024, 5, 17))
+                .status(OrderStatusEnum.PREPARING)
+                .chefId(1L)
+                .restaurantId(1L)
+                .build();
+
+        OrderResponseDto orderResponseDto = OrderResponseDto.builder()
+                .id(orderId)
+                .customerId(2L)
+                .date(LocalDate.of(2024, 5, 17))
+                .status(OrderStatusEnum.PREPARING)
+                .chefId(1L)
+                .restaurantId(1L)
+                .build();
+
+        when(orderServicePort.assignOrder(orderId))
+                .thenReturn(order);
+        when(modelMapper.map(order, OrderResponseDto.class))
+                .thenReturn(orderResponseDto);
+
+        OrderResponseDto result = orderHandler.assignOrder(orderId);
+
+        assertNotNull(result);
+        assertEquals(orderResponseDto.getId(), result.getId());
+        assertEquals(orderResponseDto.getCustomerId(), result.getCustomerId());
+        assertEquals(orderResponseDto.getDate(), result.getDate());
+        assertEquals(orderResponseDto.getStatus(), result.getStatus());
+        assertEquals(orderResponseDto.getChefId(), result.getChefId());
+        assertEquals(orderResponseDto.getRestaurantId(), result.getRestaurantId());
+
+    }
 }

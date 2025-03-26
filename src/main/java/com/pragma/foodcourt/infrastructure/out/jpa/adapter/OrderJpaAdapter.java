@@ -3,6 +3,8 @@ package com.pragma.foodcourt.infrastructure.out.jpa.adapter;
 import com.pragma.foodcourt.domain.model.Order;
 import com.pragma.foodcourt.domain.model.OrderStatusEnum;
 import com.pragma.foodcourt.domain.spi.IOrderPersistencePort;
+import com.pragma.foodcourt.infrastructure.exception.OrderNotFoundException;
+import com.pragma.foodcourt.infrastructure.helper.constants.ExceptionConstants;
 import com.pragma.foodcourt.infrastructure.out.jpa.entity.OrderEntity;
 import com.pragma.foodcourt.infrastructure.out.jpa.repository.OrderRepository;
 import com.pragma.foodcourt.infrastructure.out.jpa.specification.IOrderSpecification;
@@ -50,5 +52,12 @@ public class OrderJpaAdapter implements IOrderPersistencePort {
         return orderEntities
                 .map(orderEntity -> modelMapper.map(orderEntity, Order.class))
                 .toList();
+    }
+
+    @Override
+    public Order findById(Long orderId) {
+        OrderEntity orderEntity = orderRepository.findById(orderId)
+                .orElseThrow(() -> new OrderNotFoundException(ExceptionConstants.ORDER_NOT_FOUND));
+        return modelMapper.map(orderEntity, Order.class);
     }
 }

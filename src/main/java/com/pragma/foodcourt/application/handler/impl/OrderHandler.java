@@ -60,6 +60,12 @@ public class OrderHandler implements IOrderHandler {
                 .toList();
     }
 
+    @Override
+    public OrderResponseDto assignOrder(Long orderId) {
+        Order order = orderServicePort.assignOrder(orderId);
+        return modelMapper.map(order, OrderResponseDto.class);
+    }
+
     private List<DishOrderResponseDto> saveDishOrders(List<DishRequestDto> dishes, Order savedOrder) {
         List<OrderDish> orderDishes = new ArrayList<>();
         dishes.forEach(dish -> {
