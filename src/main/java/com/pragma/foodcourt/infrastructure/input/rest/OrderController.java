@@ -53,4 +53,17 @@ public class OrderController {
             @RequestParam OrderStatusEnum status) {
         return ResponseEntity.ok(orderHandler.getAllOrders(page, pageSize, status));
     }
+
+    @Operation(summary = ApiConstants.ASSIGN_ORDER_DESCRIPTION)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = ApiConstants.OK_DESCRIPTION, content = @Content),
+            @ApiResponse(responseCode = "400", description = ApiConstants.BAD_REQUEST_DESCRIPTION, content = @Content),
+            @ApiResponse(responseCode = "403", description = ApiConstants.FORBIDDEN_DESCRIPTION, content = @Content),
+            @ApiResponse(responseCode = "404", description = ApiConstants.NOT_FOUND_DESCRIPTION, content = @Content)
+    })
+    @PatchMapping("/{order-id}/assign-employee")
+    public ResponseEntity<OrderResponseDto> assignOrder(@PathVariable("order-id") Long orderId) {
+        return ResponseEntity.ok(orderHandler.assignOrder(orderId));
+    }
+
 }
