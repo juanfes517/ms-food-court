@@ -5,4 +5,6 @@ import com.pragma.foodcourt.domain.model.EmployeeAssignment;
 public interface IEmployeeAssignmentPersistencePort {
 
     EmployeeAssignment save(EmployeeAssignment employeeAssignment);
+
+    EmployeeAssignment findByEmployeeId(Long employeeId);
 }
