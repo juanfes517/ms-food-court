@@ -2,10 +2,7 @@ package com.pragma.foodcourt.infrastructure.exceptionhandler;
 
 import com.pragma.foodcourt.application.dto.response.ExceptionResponseDto;
 import com.pragma.foodcourt.domain.exception.*;
-import com.pragma.foodcourt.infrastructure.exception.CategoryNotFoundException;
-import com.pragma.foodcourt.infrastructure.exception.DishNotFoundException;
-import com.pragma.foodcourt.infrastructure.exception.RestaurantNotFoundException;
-import com.pragma.foodcourt.infrastructure.exception.UserNotFoundException;
+import com.pragma.foodcourt.infrastructure.exception.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -125,6 +122,16 @@ public class ControllerAdvisor {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(RestaurantNotFoundException.class)
     public ExceptionResponseDto handleRestaurantNotFoundException(RestaurantNotFoundException e) {
+        log.error(e.getMessage());
+        return ExceptionResponseDto.builder()
+                .message(e.getMessage())
+                .timestamp(LocalDateTime.now())
+                .build();
+    }
+
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(OrderNotFoundException.class)
+    public ExceptionResponseDto handleOrderNotFoundException(OrderNotFoundException e) {
         log.error(e.getMessage());
         return ExceptionResponseDto.builder()
                 .message(e.getMessage())
