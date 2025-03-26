@@ -11,4 +11,5 @@ public class ExceptionConstants {
     public static final String GENERIC_ERROR = "Unexpected Error";
     public static final String BAD_CREDENTIALS = "Unauthorized";
     public static final String EMPLOYEE_ASSIGNMENT_NOT_FOUND = "Employee Assignment Not Found";
+    public static final String ORDER_NOT_FOUND = "Order Not Found";
 }
