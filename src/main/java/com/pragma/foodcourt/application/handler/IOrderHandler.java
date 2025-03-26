@@ -12,4 +12,6 @@ public interface IOrderHandler {
     OrderWithDishesResponseDto placeOrder(OrderRequestDto orderRequest);
 
     List<OrderResponseDto> getAllOrders(int page, int pageSize, OrderStatusEnum status);
+
+    OrderResponseDto assignOrder(Long orderId);
 }
