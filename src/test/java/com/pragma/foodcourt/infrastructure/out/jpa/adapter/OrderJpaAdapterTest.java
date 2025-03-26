@@ -2,6 +2,8 @@ package com.pragma.foodcourt.infrastructure.out.jpa.adapter;
 
 import com.pragma.foodcourt.domain.model.Order;
 import com.pragma.foodcourt.domain.model.OrderStatusEnum;
+import com.pragma.foodcourt.infrastructure.exception.OrderNotFoundException;
+import com.pragma.foodcourt.infrastructure.helper.constants.ExceptionConstants;
 import com.pragma.foodcourt.infrastructure.out.jpa.entity.OrderEntity;
 import com.pragma.foodcourt.infrastructure.out.jpa.repository.OrderRepository;
 import com.pragma.foodcourt.infrastructure.out.jpa.specification.IOrderSpecification;
@@ -19,6 +21,7 @@ import org.springframework.data.jpa.domain.Specification;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -180,5 +183,56 @@ class OrderJpaAdapterTest {
         assertNotNull(result);
         assertEquals(orderEntities.size(), result.size());
         assertEquals(orders.get(0), result.get(0));
+    }
+
+    @Test
+    void findById_WhenIsSuccessful() {
+        Long orderId = 1L;
+
+        OrderEntity orderEntity = OrderEntity.builder()
+                .id(orderId)
+                .customerId(1L)
+                .date(LocalDate.of(2000, 5, 17))
+                .status(OrderStatusEnum.PENDING)
+                .chefId(null)
+                .restaurantId(1L)
+                .build();
+
+        Order order = Order.builder()
+                .id(orderId)
+                .customerId(1L)
+                .date(LocalDate.of(2000, 5, 17))
+                .status(OrderStatusEnum.PENDING)
+                .chefId(null)
+                .restaurantId(1L)
+                .build();
+
+        when(orderRepository.findById(orderId))
+                .thenReturn(Optional.of(orderEntity));
+        when(modelMapper.map(orderEntity, Order.class))
+                .thenReturn(order);
+
+        Order result = orderJpaAdapter.findById(orderId);
+
+        assertNotNull(result);
+        assertEquals(order.getId(), result.getId());
+        assertEquals(order.getCustomerId(), result.getCustomerId());
+        assertEquals(order.getDate(), result.getDate());
+        assertEquals(order.getStatus(), result.getStatus());
+        assertEquals(order.getChefId(), result.getChefId());
+        assertEquals(order.getRestaurantId(), result.getRestaurantId());
+    }
+
+    @Test
+    void findById_WhenThrowOrderNotFoundException() {
+        Long orderId = 1L;
+
+        when(orderRepository.findById(orderId))
+                .thenReturn(Optional.empty());
+
+        OrderNotFoundException result = assertThrows(OrderNotFoundException.class, () -> orderJpaAdapter.findById(orderId));
+
+        assertNotNull(result);
+        assertEquals(ExceptionConstants.ORDER_NOT_FOUND, result.getMessage());
     }
 }
