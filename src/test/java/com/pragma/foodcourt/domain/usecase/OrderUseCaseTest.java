@@ -340,9 +340,8 @@ class OrderUseCaseTest {
         when(employeeAssignmentPersistencePort.findByEmployeeId(employeeId))
                 .thenReturn(employeeAssignment);
 
-        OrderNotFromEmployeeRestaurantException result = assertThrows(OrderNotFromEmployeeRestaurantException.class, () -> {
-            orderUseCase.assignOrder(orderId);
-        });
+        OrderNotFromEmployeeRestaurantException result = assertThrows(OrderNotFromEmployeeRestaurantException.class, () ->
+                orderUseCase.assignOrder(orderId));
 
         assertNotNull(result);
         assertEquals(ExceptionConstants.ORDER_NOT_FROM_EMPLOYEE_RESTAURANT_EXCEPTION, result.getMessage());
@@ -380,9 +379,8 @@ class OrderUseCaseTest {
         when(employeeAssignmentPersistencePort.findByEmployeeId(employeeId))
                 .thenReturn(employeeAssignment);
 
-        InvalidOrderStatusException result = assertThrows(InvalidOrderStatusException.class, () -> {
-            orderUseCase.assignOrder(orderId);
-        });
+        InvalidOrderStatusException result = assertThrows(InvalidOrderStatusException.class, () ->
+                orderUseCase.assignOrder(orderId));
 
         assertNotNull(result);
         assertEquals(ExceptionConstants.INVALID_ORDER_STATUS_EXCEPTION, result.getMessage());
