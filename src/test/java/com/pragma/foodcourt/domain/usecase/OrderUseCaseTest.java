@@ -2,8 +2,11 @@ package com.pragma.foodcourt.domain.usecase;
 
 import com.pragma.foodcourt.domain.exception.CustomerHasActiveOrderException;
 import com.pragma.foodcourt.domain.helper.constants.ExceptionConstants;
+import com.pragma.foodcourt.domain.model.EmployeeAssignment;
 import com.pragma.foodcourt.domain.model.Order;
 import com.pragma.foodcourt.domain.model.OrderStatusEnum;
+import com.pragma.foodcourt.domain.model.Restaurant;
+import com.pragma.foodcourt.domain.spi.IEmployeeAssignmentPersistencePort;
 import com.pragma.foodcourt.domain.spi.IJwtSecurityServicePort;
 import com.pragma.foodcourt.domain.spi.IOrderPersistencePort;
 import com.pragma.foodcourt.domain.spi.IUserExternalServicePort;
@@ -33,6 +36,9 @@ class OrderUseCaseTest {
 
     @Mock
     private IJwtSecurityServicePort jwtSecurityServicePort;
+
+    @Mock
+    private IEmployeeAssignmentPersistencePort employeeAssignmentPersistencePort;
 
     @Test
     void placeOrder_WhenIsSuccessful() {
@@ -197,5 +203,52 @@ class OrderUseCaseTest {
         CustomerHasActiveOrderException result = assertThrows(CustomerHasActiveOrderException.class, () -> orderUseCase.placeOrder(order));
 
         assertEquals(ExceptionConstants.CUSTOMER_HAS_ACTIVE_ORDER_EXCEPTION, result.getMessage());
+    }
+
+    @Test
+    void getAllOrders_WhenIsSuccessful() {
+        int page = 0;
+        int pageSize = 10;
+        OrderStatusEnum status = OrderStatusEnum.PENDING;
+        String tokenEmail = "customer@email.com";
+        Long employeeId = 1L;
+        Long restaurantId = 1L;
+
+        Restaurant restaurant = Restaurant.builder()
+                .id(restaurantId)
+                .build();
+
+        EmployeeAssignment employeeAssignment = EmployeeAssignment.builder()
+                .id(1L)
+                .employeeId(employeeId)
+                .restaurant(restaurant)
+                .build();
+
+        Order order = Order.builder()
+                .id(1L)
+                .customerId(2L)
+                .date(LocalDate.of(2024, 5, 17))
+                .status(OrderStatusEnum.PENDING)
+                .chefId(null)
+                .restaurantId(restaurantId)
+                .build();
+
+        List<Order> orders = List.of(order);
+
+        when(jwtSecurityServicePort.getSubject())
+                .thenReturn(tokenEmail);
+        when(userExternalServicePort.getUserIdByEmail(tokenEmail))
+                .thenReturn(employeeId);
+        when(employeeAssignmentPersistencePort.findByEmployeeId(employeeId))
+                .thenReturn(employeeAssignment);
+        when(orderPersistencePort.findAll(page, pageSize, status, restaurantId))
+                .thenReturn(orders);
+
+        List<Order> result = orderUseCase.getAllOrders(page, pageSize, status);
+        
+        assertEquals(orders.size(), result.size());
+        assertEquals(orders.get(0).getRestaurantId(), result.get(0).getRestaurantId());
+        assertEquals(orders.get(0).getCustomerId(), result.get(0).getCustomerId());
+        assertEquals(orders.get(0).getStatus(), result.get(0).getStatus());
     }
 }
