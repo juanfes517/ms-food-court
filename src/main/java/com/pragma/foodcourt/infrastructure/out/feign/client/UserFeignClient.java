@@ -14,4 +14,7 @@ public interface UserFeignClient {
 
     @GetMapping("/{user-id}/has-email")
     Boolean userHasEmail(@PathVariable("user-id") Long userId, @RequestParam() String email);
+
+    @GetMapping("/id")
+    Long getUserIdByEmail(@RequestParam String email);
 }

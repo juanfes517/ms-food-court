@@ -61,9 +61,29 @@ public class ControllerAdvisor {
                 .build();
     }
 
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(InvalidDishQuantityException.class)
+    public ExceptionResponseDto handleInvalidDishQuantityException(InvalidDishQuantityException e) {
+        log.error(e.getMessage());
+        return ExceptionResponseDto.builder()
+                .message(e.getMessage())
+                .timestamp(LocalDateTime.now())
+                .build();
+    }
+
     @ResponseStatus(HttpStatus.CONFLICT)
     @ExceptionHandler(SQLIntegrityConstraintViolationException.class)
     public ExceptionResponseDto handleSQLIntegrityConstraintViolationException(SQLIntegrityConstraintViolationException e) {
+        log.error(e.getMessage());
+        return ExceptionResponseDto.builder()
+                .message(e.getMessage())
+                .timestamp(LocalDateTime.now())
+                .build();
+    }
+
+    @ResponseStatus(HttpStatus.CONFLICT)
+    @ExceptionHandler(CustomerHasActiveOrderException.class)
+    public ExceptionResponseDto handleCustomerHasActiveOrderException(CustomerHasActiveOrderException e) {
         log.error(e.getMessage());
         return ExceptionResponseDto.builder()
                 .message(e.getMessage())
@@ -125,6 +145,16 @@ public class ControllerAdvisor {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(InvalidPriceException.class)
     public ExceptionResponseDto handleInvalidPriceException(InvalidPriceException e) {
+        log.error(e.getMessage());
+        return ExceptionResponseDto.builder()
+                .message(e.getMessage())
+                .timestamp(LocalDateTime.now())
+                .build();
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(InvalidDishRestaurantException.class)
+    public ExceptionResponseDto handleInvalidDishRestaurantException(InvalidDishRestaurantException e) {
         log.error(e.getMessage());
         return ExceptionResponseDto.builder()
                 .message(e.getMessage())
