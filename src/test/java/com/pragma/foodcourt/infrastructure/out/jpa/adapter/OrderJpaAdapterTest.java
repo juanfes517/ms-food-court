@@ -4,17 +4,25 @@ import com.pragma.foodcourt.domain.model.Order;
 import com.pragma.foodcourt.domain.model.OrderStatusEnum;
 import com.pragma.foodcourt.infrastructure.out.jpa.entity.OrderEntity;
 import com.pragma.foodcourt.infrastructure.out.jpa.repository.OrderRepository;
+import com.pragma.foodcourt.infrastructure.out.jpa.specification.IOrderSpecification;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 
 import java.time.LocalDate;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -25,6 +33,9 @@ class OrderJpaAdapterTest {
 
     @Mock
     private OrderRepository orderRepository;
+
+    @Mock
+    private IOrderSpecification orderSpecification;
 
     @Mock
     private ModelMapper modelMapper;
@@ -119,6 +130,55 @@ class OrderJpaAdapterTest {
 
         assertNotNull(result);
         assertEquals(orders.size(), result.size());
+        assertEquals(orders.get(0), result.get(0));
+    }
+
+    @Test
+    void findAll_WhenIsSuccessful() {
+        int page = 0;
+        int pageSize = 10;
+        OrderStatusEnum status = OrderStatusEnum.PENDING;
+        Long restaurantId = 1L;
+
+        OrderEntity orderEntity = OrderEntity.builder()
+                .id(1L)
+                .customerId(1L)
+                .date(LocalDate.of(2000, 5, 17))
+                .status(OrderStatusEnum.PENDING)
+                .chefId(null)
+                .restaurantId(1L)
+                .build();
+
+        Order order = Order.builder()
+                .id(1L)
+                .customerId(1L)
+                .date(LocalDate.of(2000, 5, 17))
+                .status(OrderStatusEnum.PENDING)
+                .chefId(null)
+                .restaurantId(1L)
+                .build();
+
+        Specification<OrderEntity> specification = Specification.where(null);
+        Pageable pageable = PageRequest.of(page, pageSize);
+
+        List<OrderEntity > orderEntities = List.of(orderEntity);
+        Page<OrderEntity> orderEntityPage = new PageImpl<>(orderEntities, pageable, orderEntities.size());
+
+        List<Order> orders = List.of(order);
+
+        when(orderSpecification.hasStatus(status))
+                .thenReturn(specification);
+        when(orderSpecification.hasRestaurantId(restaurantId))
+                .thenReturn(specification);
+        when(orderRepository.findAll(any(Specification.class), eq(pageable)))
+                .thenReturn(orderEntityPage);
+        when(modelMapper.map(orderEntity, Order.class))
+                .thenReturn(order);
+
+        List<Order> result = orderJpaAdapter.findAll(page, pageSize, status, restaurantId);
+
+        assertNotNull(result);
+        assertEquals(orderEntities.size(), result.size());
         assertEquals(orders.get(0), result.get(0));
     }
 }

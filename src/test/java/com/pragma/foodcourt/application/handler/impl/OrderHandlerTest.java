@@ -2,10 +2,7 @@ package com.pragma.foodcourt.application.handler.impl;
 
 import com.pragma.foodcourt.application.dto.request.DishRequestDto;
 import com.pragma.foodcourt.application.dto.request.OrderRequestDto;
-import com.pragma.foodcourt.application.dto.response.CategoryResponseDto;
-import com.pragma.foodcourt.application.dto.response.DishOrderResponseDto;
-import com.pragma.foodcourt.application.dto.response.OrderResponseDto;
-import com.pragma.foodcourt.application.dto.response.RestaurantResponseDto;
+import com.pragma.foodcourt.application.dto.response.*;
 import com.pragma.foodcourt.domain.api.IOrderDishServicePort;
 import com.pragma.foodcourt.domain.api.IOrderServicePort;
 import com.pragma.foodcourt.domain.api.IRestaurantServicePort;
@@ -87,7 +84,7 @@ class OrderHandlerTest {
 
         List<DishOrderResponseDto> savedDishes = List.of(dishOrderResponse1);
 
-        OrderResponseDto orderResponseDto = OrderResponseDto.builder()
+        OrderWithDishesResponseDto orderWithDishesResponseDto = OrderWithDishesResponseDto.builder()
                 .id(savedOrder.getId())
                 .date(savedOrder.getDate())
                 .status(savedOrder.getStatus())
@@ -104,12 +101,53 @@ class OrderHandlerTest {
         when(modelMapper.map(savedOrderDish.getDish(), DishOrderResponseDto.class))
                 .thenReturn(dishOrderResponse1);
 
-        OrderResponseDto result = orderHandler.placeOrder(orderRequestDto);
+        OrderWithDishesResponseDto result = orderHandler.placeOrder(orderRequestDto);
 
         assertNotNull(result);
-        assertEquals(orderResponseDto.getId(), result.getId());
-        assertEquals(orderResponseDto.getDate(), result.getDate());
-        assertEquals(orderResponseDto.getStatus(), result.getStatus());
-        assertEquals(orderResponseDto.getDishes().size(), result.getDishes().size());
+        assertEquals(orderWithDishesResponseDto.getId(), result.getId());
+        assertEquals(orderWithDishesResponseDto.getDate(), result.getDate());
+        assertEquals(orderWithDishesResponseDto.getStatus(), result.getStatus());
+        assertEquals(orderWithDishesResponseDto.getDishes().size(), result.getDishes().size());
+    }
+
+    @Test
+    void getAllOrders_WhenIsSuccessful() {
+        int page = 0;
+        int pageSize = 10;
+        OrderStatusEnum status = OrderStatusEnum.PENDING;
+
+        Order order = Order.builder()
+                .id(1L)
+                .customerId(2L)
+                .date(LocalDate.of(2024, 5, 17))
+                .status(OrderStatusEnum.PENDING)
+                .chefId(null)
+                .restaurantId(1L)
+                .build();
+
+        OrderResponseDto orderResponseDto = OrderResponseDto.builder()
+                .id(1L)
+                .customerId(2L)
+                .date(LocalDate.of(2024, 5, 17))
+                .status(OrderStatusEnum.PENDING)
+                .chefId(null)
+                .restaurantId(1L)
+                .build();
+
+        List<Order> orders = List.of(order);
+        List<OrderResponseDto> responseOrders = List.of(orderResponseDto);
+
+        when(orderServicePort.getAllOrders(page, pageSize, status))
+                .thenReturn(orders);
+        when(modelMapper.map(order, OrderResponseDto.class))
+                .thenReturn(orderResponseDto);
+
+        List<OrderResponseDto> result = orderHandler.getAllOrders(page, pageSize, status);
+
+        assertNotNull(result);
+        assertEquals(responseOrders.size(), result.size());
+        assertEquals(responseOrders.get(0).getId(), result.get(0).getId());
+        assertEquals(responseOrders.get(0).getStatus(), result.get(0).getStatus());
+
     }
 }

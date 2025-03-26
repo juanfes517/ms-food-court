@@ -64,7 +64,8 @@ public class BeanConfiguration {
     public IOrderServicePort orderService(
             IUserExternalServicePort userExternalServicePort,
             IOrderPersistencePort orderPersistencePort,
-            IJwtSecurityServicePort jwtSecurityServicePort) {
-        return new OrderUseCase(userExternalServicePort, orderPersistencePort, jwtSecurityServicePort);
+            IJwtSecurityServicePort jwtSecurityServicePort,
+            IEmployeeAssignmentPersistencePort employeeAssignmentPersistencePort) {
+        return new OrderUseCase(userExternalServicePort, orderPersistencePort, jwtSecurityServicePort, employeeAssignmentPersistencePort);
     }
 }

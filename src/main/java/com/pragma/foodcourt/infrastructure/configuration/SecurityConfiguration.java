@@ -33,6 +33,7 @@ public class SecurityConfiguration {
                     http.requestMatchers(HttpMethod.PATCH, SecurityConstants.getOwnerEndpoints()).hasRole(SecurityConstants.OWNER_ROLE);
                     http.requestMatchers(HttpMethod.GET, SecurityConstants.getCustomerGetEndpoints()).hasRole(SecurityConstants.CUSTOMER_ROLE);
                     http.requestMatchers(HttpMethod.POST, SecurityConstants.getCustomerPostEndpoints()).hasRole(SecurityConstants.CUSTOMER_ROLE);
+                    http.requestMatchers(HttpMethod.GET, SecurityConstants.getEmployeeEndpoints()).hasRole(SecurityConstants.EMPLOYEE_ROLE);
                     http.anyRequest().authenticated();
                 })
                 .addFilterBefore(new JwtTokenValidator(jwtSecurityServicePort), BasicAuthenticationFilter.class)

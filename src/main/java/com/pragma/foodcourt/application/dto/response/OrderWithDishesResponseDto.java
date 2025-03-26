@@ -4,18 +4,17 @@ import com.pragma.foodcourt.domain.model.OrderStatusEnum;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Setter
 @Getter
 @Builder
-public class OrderResponseDto {
+public class OrderWithDishesResponseDto {
 
     private Long id;
-    private Long customerId;
     private LocalDate date;
     private OrderStatusEnum status;
-    private Long chefId;
-    private Long restaurantId;
+    private List<DishOrderResponseDto> dishes;
 }

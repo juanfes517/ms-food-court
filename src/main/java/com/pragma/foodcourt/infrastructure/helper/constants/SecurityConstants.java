@@ -7,6 +7,7 @@ public class SecurityConstants {
     public static final String ADMIN_ROLE = "ADMIN";
     public static final String OWNER_ROLE = "OWNER";
     public static final String CUSTOMER_ROLE = "CUSTOMER";
+    public static final String EMPLOYEE_ROLE = "EMPLOYEE";
 
     private static final String[] PUBLIC_ENDPOINTS = {
             "/v1/api-docs/**",
@@ -32,12 +33,20 @@ public class SecurityConstants {
             "/api/v1/orders"
     };
 
+    private static final String[] EMPLOYEE_ENDPOINTS = {
+            "/api/v1/orders"
+    };
+
     public static String[] getPublicEndpoints() {
         return PUBLIC_ENDPOINTS.clone();
     }
 
     public static String[] getAdminEndpoints() {
         return ADMIN_ENDPOINTS.clone();
+    }
+
+    public static String[] getEmployeeEndpoints() {
+        return EMPLOYEE_ENDPOINTS.clone();
     }
 
     public static String[] getOwnerEndpoints() {
