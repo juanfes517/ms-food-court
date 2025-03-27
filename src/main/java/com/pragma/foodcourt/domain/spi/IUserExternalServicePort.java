@@ -7,4 +7,6 @@ public interface IUserExternalServicePort {
     boolean userHasEmail(Long userId, String email);
 
     Long getUserIdByEmail(String email);
+
+    String getCellPhoneNumberById(Long userId);
 }
