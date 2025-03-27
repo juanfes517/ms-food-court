@@ -3,6 +3,7 @@ package com.pragma.foodcourt.application.handler.impl;
 import com.pragma.foodcourt.application.dto.request.DishRequestDto;
 import com.pragma.foodcourt.application.dto.request.OrderRequestDto;
 import com.pragma.foodcourt.application.dto.response.DishOrderResponseDto;
+import com.pragma.foodcourt.application.dto.response.NotifyResponseDto;
 import com.pragma.foodcourt.application.dto.response.OrderResponseDto;
 import com.pragma.foodcourt.application.dto.response.OrderWithDishesResponseDto;
 import com.pragma.foodcourt.application.handler.IOrderHandler;
@@ -64,6 +65,12 @@ public class OrderHandler implements IOrderHandler {
     public OrderResponseDto assignOrder(Long orderId) {
         Order order = orderServicePort.assignOrder(orderId);
         return modelMapper.map(order, OrderResponseDto.class);
+    }
+
+    @Override
+    public NotifyResponseDto markOrderReady(Long orderId) {
+        int securityPin = orderServicePort.markOrderReady(orderId);
+        return new NotifyResponseDto(orderId, securityPin);
     }
 
     private List<DishOrderResponseDto> saveDishOrders(List<DishRequestDto> dishes, Order savedOrder) {

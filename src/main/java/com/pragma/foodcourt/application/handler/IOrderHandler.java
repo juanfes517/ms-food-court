@@ -1,6 +1,7 @@
 package com.pragma.foodcourt.application.handler;
 
 import com.pragma.foodcourt.application.dto.request.OrderRequestDto;
+import com.pragma.foodcourt.application.dto.response.NotifyResponseDto;
 import com.pragma.foodcourt.application.dto.response.OrderResponseDto;
 import com.pragma.foodcourt.application.dto.response.OrderWithDishesResponseDto;
 import com.pragma.foodcourt.domain.model.OrderStatusEnum;
@@ -14,4 +15,6 @@ public interface IOrderHandler {
     List<OrderResponseDto> getAllOrders(int page, int pageSize, OrderStatusEnum status);
 
     OrderResponseDto assignOrder(Long orderId);
+
+    NotifyResponseDto markOrderReady(Long orderId);
 }
