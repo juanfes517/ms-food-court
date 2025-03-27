@@ -220,6 +220,16 @@ public class ControllerAdvisor {
     }
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler(NotificationFailedException.class)
+    public ExceptionResponseDto handleNotificationFailedException(NotificationFailedException e) {
+        log.error(e.getMessage());
+        return ExceptionResponseDto.builder()
+                .message(e.getMessage())
+                .timestamp(LocalDateTime.now())
+                .build();
+    }
+
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(RuntimeException.class)
     public ExceptionResponseDto handleRuntimeException(RuntimeException e) {
         log.error(e.getMessage());
