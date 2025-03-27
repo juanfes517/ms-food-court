@@ -1,20 +1,16 @@
 package com.pragma.foodcourt.domain.usecase;
 
 import com.pragma.foodcourt.domain.api.IOrderServicePort;
-import com.pragma.foodcourt.domain.exception.CustomerHasActiveOrderException;
-import com.pragma.foodcourt.domain.exception.InvalidOrderStatusException;
-import com.pragma.foodcourt.domain.exception.OrderNotFromEmployeeRestaurantException;
+import com.pragma.foodcourt.domain.exception.*;
 import com.pragma.foodcourt.domain.helper.constants.ExceptionConstants;
 import com.pragma.foodcourt.domain.model.EmployeeAssignment;
 import com.pragma.foodcourt.domain.model.Order;
 import com.pragma.foodcourt.domain.model.OrderStatusEnum;
-import com.pragma.foodcourt.domain.spi.IEmployeeAssignmentPersistencePort;
-import com.pragma.foodcourt.domain.spi.IJwtSecurityServicePort;
-import com.pragma.foodcourt.domain.spi.IOrderPersistencePort;
-import com.pragma.foodcourt.domain.spi.IUserExternalServicePort;
+import com.pragma.foodcourt.domain.spi.*;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
+import java.util.Random;
 
 @RequiredArgsConstructor
 public class OrderUseCase implements IOrderServicePort {
@@ -23,6 +19,9 @@ public class OrderUseCase implements IOrderServicePort {
     private final IOrderPersistencePort orderPersistencePort;
     private final IJwtSecurityServicePort jwtSecurityServicePort;
     private final IEmployeeAssignmentPersistencePort employeeAssignmentPersistencePort;
+    private final ISmsExternalService smsExternalService;
+
+    private final Random random = new Random();
 
     @Override
     public Order placeOrder(Order order) {
@@ -59,10 +58,46 @@ public class OrderUseCase implements IOrderServicePort {
         return orderPersistencePort.save(order);
     }
 
+    @Override
+    public int markOrderReady(Long orderId) {
+        String tokenEmail = jwtSecurityServicePort.getSubject();
+        Long employeeId = userExternalServicePort.getUserIdByEmail(tokenEmail);
+        Order order = orderPersistencePort.findById(orderId);
+
+        this.validateOrderRestaurant(order, employeeId);
+        this.validateOrderAssignedToChef(order, employeeId);
+        this.validateOrderStatus(order, OrderStatusEnum.PREPARING);
+
+        String customerCellPhoneNumber = userExternalServicePort.getCellPhoneNumberById(order.getCustomerId());
+        int securityPin = this.sendNotification(customerCellPhoneNumber);
+
+        order.setStatus(OrderStatusEnum.READY);
+        orderPersistencePort.save(order);
+        return securityPin;
+    }
+
+    private int sendNotification(String customerCellPhoneNumber) {
+        int securityPin = 100000 + random.nextInt(900000);
+        boolean notifyResult = smsExternalService.notifyOrderReady(customerCellPhoneNumber, securityPin);
+
+        if (!notifyResult) {
+            throw new NotificationFailedException(ExceptionConstants.NOTIFICATION_FAILED_EXCEPTION);
+        }
+
+        return securityPin;
+    }
+
     private void validateOrderStatus(Order order, OrderStatusEnum expectedStatus) {
         OrderStatusEnum actualStatus = order.getStatus();
         if (actualStatus != expectedStatus) {
             throw new InvalidOrderStatusException(ExceptionConstants.INVALID_ORDER_STATUS_EXCEPTION);
+        }
+    }
+
+    private void validateOrderAssignedToChef(Order order, Long employeeId) {
+        Long chefId = order.getChefId();
+        if (!employeeId.equals(chefId)) {
+            throw new OrderNotAssignedToEmployeeException(ExceptionConstants.ORDER_NOT_ASSIGNED_TO_EMPLOYEE_EXCEPTION);
         }
     }
 
