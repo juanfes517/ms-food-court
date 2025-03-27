@@ -189,4 +189,19 @@ class OrderHandlerTest {
         assertEquals(orderResponseDto.getRestaurantId(), result.getRestaurantId());
 
     }
+
+    @Test
+    void markOrderReady_WhenIsSuccessful() {
+        Long orderId = 1L;
+        int securityPin = 333333;
+
+        when(orderServicePort.markOrderReady(orderId))
+                .thenReturn(securityPin);
+
+        NotifyResponseDto result = orderHandler.markOrderReady(orderId);
+
+        assertNotNull(result);
+        assertEquals(securityPin, result.getSecurityPin());
+        assertEquals(orderId, result.getOrderId());
+    }
 }
