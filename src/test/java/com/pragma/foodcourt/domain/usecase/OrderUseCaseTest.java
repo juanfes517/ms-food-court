@@ -1,17 +1,12 @@
 package com.pragma.foodcourt.domain.usecase;
 
-import com.pragma.foodcourt.domain.exception.CustomerHasActiveOrderException;
-import com.pragma.foodcourt.domain.exception.InvalidOrderStatusException;
-import com.pragma.foodcourt.domain.exception.OrderNotFromEmployeeRestaurantException;
+import com.pragma.foodcourt.domain.exception.*;
 import com.pragma.foodcourt.domain.helper.constants.ExceptionConstants;
 import com.pragma.foodcourt.domain.model.EmployeeAssignment;
 import com.pragma.foodcourt.domain.model.Order;
 import com.pragma.foodcourt.domain.model.OrderStatusEnum;
 import com.pragma.foodcourt.domain.model.Restaurant;
-import com.pragma.foodcourt.domain.spi.IEmployeeAssignmentPersistencePort;
-import com.pragma.foodcourt.domain.spi.IJwtSecurityServicePort;
-import com.pragma.foodcourt.domain.spi.IOrderPersistencePort;
-import com.pragma.foodcourt.domain.spi.IUserExternalServicePort;
+import com.pragma.foodcourt.domain.spi.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -22,6 +17,8 @@ import java.time.LocalDate;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -41,6 +38,9 @@ class OrderUseCaseTest {
 
     @Mock
     private IEmployeeAssignmentPersistencePort employeeAssignmentPersistencePort;
+
+    @Mock
+    private ISmsExternalService smsExternalService;
 
     @Test
     void placeOrder_WhenIsSuccessful() {
@@ -384,5 +384,205 @@ class OrderUseCaseTest {
 
         assertNotNull(result);
         assertEquals(ExceptionConstants.INVALID_ORDER_STATUS_EXCEPTION, result.getMessage());
+    }
+
+    @Test
+    void markOrderReady_WhenIsSuccessful() {
+        String customerCellPhoneNumber = "3221234322";
+        String tokenEmail = "test@email.com";
+        Long orderId = 1L;
+        Long employeeId = 1L;
+        Long orderRestaurantId = 1L;
+        Long employeeRestaurantId = 1L;
+
+        Order order = Order.builder()
+                .id(orderId)
+                .customerId(2L)
+                .date(LocalDate.of(2024, 5, 17))
+                .status(OrderStatusEnum.PREPARING)
+                .chefId(employeeId)
+                .restaurantId(orderRestaurantId)
+                .build();
+
+        EmployeeAssignment employeeAssignment = EmployeeAssignment.builder()
+                .id(1L)
+                .employeeId(employeeId)
+                .restaurant(Restaurant.builder().id(employeeRestaurantId).build())
+                .build();
+
+        when(jwtSecurityServicePort.getSubject())
+                .thenReturn(tokenEmail);
+        when(userExternalServicePort.getUserIdByEmail(tokenEmail))
+                .thenReturn(employeeId);
+        when(orderPersistencePort.findById(orderId))
+                .thenReturn(order);
+        when(employeeAssignmentPersistencePort.findByEmployeeId(employeeId))
+                .thenReturn(employeeAssignment);
+        when(userExternalServicePort.getCellPhoneNumberById(order.getCustomerId()))
+                .thenReturn(customerCellPhoneNumber);
+        when(smsExternalService.notifyOrderReady(eq(customerCellPhoneNumber), anyInt()))
+                .thenReturn(true);
+
+        int result = orderUseCase.markOrderReady(orderId);
+
+        assertTrue(result > 99999);
+        assertTrue(result < 1000000);
+    }
+
+    @Test
+    void markOrderReady_WhenThrowOrderNotFromEmployeeRestaurantException() {
+        String tokenEmail = "test@email.com";
+        Long orderId = 1L;
+        Long employeeId = 1L;
+        Long orderRestaurantId = 1L;
+        Long employeeRestaurantId = 2L;
+
+        Order order = Order.builder()
+                .id(orderId)
+                .customerId(2L)
+                .date(LocalDate.of(2024, 5, 17))
+                .status(OrderStatusEnum.PREPARING)
+                .chefId(employeeId)
+                .restaurantId(orderRestaurantId)
+                .build();
+
+        EmployeeAssignment employeeAssignment = EmployeeAssignment.builder()
+                .id(1L)
+                .employeeId(employeeId)
+                .restaurant(Restaurant.builder().id(employeeRestaurantId).build())
+                .build();
+
+        when(jwtSecurityServicePort.getSubject())
+                .thenReturn(tokenEmail);
+        when(userExternalServicePort.getUserIdByEmail(tokenEmail))
+                .thenReturn(employeeId);
+        when(orderPersistencePort.findById(orderId))
+                .thenReturn(order);
+        when(employeeAssignmentPersistencePort.findByEmployeeId(employeeId))
+                .thenReturn(employeeAssignment);
+
+        OrderNotFromEmployeeRestaurantException result = assertThrows(OrderNotFromEmployeeRestaurantException.class, () ->
+                orderUseCase.markOrderReady(orderId));
+
+        assertEquals(ExceptionConstants.ORDER_NOT_FROM_EMPLOYEE_RESTAURANT_EXCEPTION, result.getMessage());
+    }
+
+    @Test
+    void markOrderReady_WhenThrowOrderNotAssignedToEmployeeException() {
+        String tokenEmail = "test@email.com";
+        Long orderId = 1L;
+        Long employeeId = 1L;
+        Long orderRestaurantId = 1L;
+        Long employeeRestaurantId = 1L;
+
+        Order order = Order.builder()
+                .id(orderId)
+                .customerId(2L)
+                .date(LocalDate.of(2024, 5, 17))
+                .status(OrderStatusEnum.PREPARING)
+                .chefId(2L)
+                .restaurantId(orderRestaurantId)
+                .build();
+
+        EmployeeAssignment employeeAssignment = EmployeeAssignment.builder()
+                .id(1L)
+                .employeeId(employeeId)
+                .restaurant(Restaurant.builder().id(employeeRestaurantId).build())
+                .build();
+
+        when(jwtSecurityServicePort.getSubject())
+                .thenReturn(tokenEmail);
+        when(userExternalServicePort.getUserIdByEmail(tokenEmail))
+                .thenReturn(employeeId);
+        when(orderPersistencePort.findById(orderId))
+                .thenReturn(order);
+        when(employeeAssignmentPersistencePort.findByEmployeeId(employeeId))
+                .thenReturn(employeeAssignment);
+
+        OrderNotAssignedToEmployeeException result = assertThrows(OrderNotAssignedToEmployeeException.class, () ->
+                orderUseCase.markOrderReady(orderId));
+
+        assertEquals(ExceptionConstants.ORDER_NOT_ASSIGNED_TO_EMPLOYEE_EXCEPTION, result.getMessage());
+    }
+
+    @Test
+    void markOrderReady_WhenThrowInvalidOrderStatusException() {
+        String tokenEmail = "test@email.com";
+        Long orderId = 1L;
+        Long employeeId = 1L;
+        Long orderRestaurantId = 1L;
+        Long employeeRestaurantId = 1L;
+
+        Order order = Order.builder()
+                .id(orderId)
+                .customerId(2L)
+                .date(LocalDate.of(2024, 5, 17))
+                .status(OrderStatusEnum.PENDING)
+                .chefId(employeeId)
+                .restaurantId(orderRestaurantId)
+                .build();
+
+        EmployeeAssignment employeeAssignment = EmployeeAssignment.builder()
+                .id(1L)
+                .employeeId(employeeId)
+                .restaurant(Restaurant.builder().id(employeeRestaurantId).build())
+                .build();
+
+        when(jwtSecurityServicePort.getSubject())
+                .thenReturn(tokenEmail);
+        when(userExternalServicePort.getUserIdByEmail(tokenEmail))
+                .thenReturn(employeeId);
+        when(orderPersistencePort.findById(orderId))
+                .thenReturn(order);
+        when(employeeAssignmentPersistencePort.findByEmployeeId(employeeId))
+                .thenReturn(employeeAssignment);
+
+        InvalidOrderStatusException result = assertThrows(InvalidOrderStatusException.class, () ->
+                orderUseCase.markOrderReady(orderId));
+
+        assertEquals(ExceptionConstants.INVALID_ORDER_STATUS_EXCEPTION, result.getMessage());
+    }
+
+    @Test
+    void markOrderReady_WhenThrowNotificationFailedException() {
+        String customerCellPhoneNumber = "3221234322";
+        String tokenEmail = "test@email.com";
+        Long orderId = 1L;
+        Long employeeId = 1L;
+        Long orderRestaurantId = 1L;
+        Long employeeRestaurantId = 1L;
+
+        Order order = Order.builder()
+                .id(orderId)
+                .customerId(2L)
+                .date(LocalDate.of(2024, 5, 17))
+                .status(OrderStatusEnum.PREPARING)
+                .chefId(employeeId)
+                .restaurantId(orderRestaurantId)
+                .build();
+
+        EmployeeAssignment employeeAssignment = EmployeeAssignment.builder()
+                .id(1L)
+                .employeeId(employeeId)
+                .restaurant(Restaurant.builder().id(employeeRestaurantId).build())
+                .build();
+
+        when(jwtSecurityServicePort.getSubject())
+                .thenReturn(tokenEmail);
+        when(userExternalServicePort.getUserIdByEmail(tokenEmail))
+                .thenReturn(employeeId);
+        when(orderPersistencePort.findById(orderId))
+                .thenReturn(order);
+        when(employeeAssignmentPersistencePort.findByEmployeeId(employeeId))
+                .thenReturn(employeeAssignment);
+        when(userExternalServicePort.getCellPhoneNumberById(order.getCustomerId()))
+                .thenReturn(customerCellPhoneNumber);
+        when(smsExternalService.notifyOrderReady(eq(customerCellPhoneNumber), anyInt()))
+                .thenReturn(false);
+
+        NotificationFailedException result = assertThrows(NotificationFailedException.class, () ->
+                orderUseCase.markOrderReady(orderId));
+
+        assertEquals(ExceptionConstants.NOTIFICATION_FAILED_EXCEPTION, result.getMessage());
     }
 }
