@@ -210,6 +210,16 @@ public class ControllerAdvisor {
     }
 
     @ResponseStatus(HttpStatus.FORBIDDEN)
+    @ExceptionHandler(InvalidSecurityPinException.class)
+    public ExceptionResponseDto handleInvalidSecurityPinException(InvalidSecurityPinException e) {
+        log.error(e.getMessage());
+        return ExceptionResponseDto.builder()
+                .message(e.getMessage())
+                .timestamp(LocalDateTime.now())
+                .build();
+    }
+
+    @ResponseStatus(HttpStatus.FORBIDDEN)
     @ExceptionHandler(OrderNotAssignedToEmployeeException.class)
     public ExceptionResponseDto handleOrderNotAssignedToEmployeeException(OrderNotAssignedToEmployeeException e) {
         log.error(e.getMessage());
