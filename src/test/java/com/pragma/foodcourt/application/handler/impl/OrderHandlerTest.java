@@ -204,4 +204,43 @@ class OrderHandlerTest {
         assertEquals(securityPin, result.getSecurityPin());
         assertEquals(orderId, result.getOrderId());
     }
+
+    @Test
+    void markOrderDelivered_WhenIsSuccessful() {
+        Long orderId = 1L;
+        String securityPin = "123456";
+
+        Order order = Order.builder()
+                .id(orderId)
+                .customerId(2L)
+                .date(LocalDate.of(2024, 5, 17))
+                .status(OrderStatusEnum.DELIVERED)
+                .chefId(1L)
+                .restaurantId(1L)
+                .build();
+
+        OrderResponseDto orderResponseDto = OrderResponseDto.builder()
+                .id(orderId)
+                .customerId(2L)
+                .date(LocalDate.of(2024, 5, 17))
+                .status(OrderStatusEnum.DELIVERED)
+                .chefId(1L)
+                .restaurantId(1L)
+                .build();
+
+        when(orderServicePort.markOrderDelivered(orderId, securityPin))
+                .thenReturn(order);
+        when(modelMapper.map(order, OrderResponseDto.class))
+                .thenReturn(orderResponseDto);
+
+        OrderResponseDto result = orderHandler.markOrderDelivered(orderId, securityPin);
+
+        assertNotNull(result);
+        assertEquals(orderResponseDto.getId(), result.getId());
+        assertEquals(orderResponseDto.getCustomerId(), result.getCustomerId());
+        assertEquals(orderResponseDto.getDate(), result.getDate());
+        assertEquals(orderResponseDto.getStatus(), result.getStatus());
+        assertEquals(orderResponseDto.getChefId(), result.getChefId());
+        assertEquals(orderResponseDto.getRestaurantId(), result.getRestaurantId());
+    }
 }
