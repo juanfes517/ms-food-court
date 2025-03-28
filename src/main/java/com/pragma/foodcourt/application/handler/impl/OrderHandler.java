@@ -79,6 +79,12 @@ public class OrderHandler implements IOrderHandler {
         return modelMapper.map(order, OrderResponseDto.class);
     }
 
+    @Override
+    public OrderResponseDto cancelOrder(Long orderId) {
+        Order order = orderServicePort.cancelOrder(orderId);
+        return modelMapper.map(order, OrderResponseDto.class);
+    }
+
     private List<DishOrderResponseDto> saveDishOrders(List<DishRequestDto> dishes, Order savedOrder) {
         List<OrderDish> orderDishes = new ArrayList<>();
         dishes.forEach(dish -> {

@@ -19,4 +19,6 @@ public interface IOrderHandler {
     NotifyResponseDto markOrderReady(Long orderId);
 
     OrderResponseDto markOrderDelivered(Long orderId, String securityPin);
+
+    OrderResponseDto cancelOrder(Long orderId);
 }
