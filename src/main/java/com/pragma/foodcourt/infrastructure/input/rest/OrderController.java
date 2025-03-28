@@ -80,4 +80,19 @@ public class OrderController {
         return ResponseEntity.ok(orderHandler.markOrderReady(orderId));
     }
 
+    @Operation(summary = ApiConstants.MARK_ORDER_AS_DELIVERED_DESCRIPTION)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = ApiConstants.OK_DESCRIPTION, content = @Content),
+            @ApiResponse(responseCode = "400", description = ApiConstants.BAD_REQUEST_DESCRIPTION, content = @Content),
+            @ApiResponse(responseCode = "403", description = ApiConstants.FORBIDDEN_DESCRIPTION, content = @Content),
+            @ApiResponse(responseCode = "404", description = ApiConstants.NOT_FOUND_DESCRIPTION, content = @Content),
+            @ApiResponse(responseCode = "500", description = ApiConstants.INTERNAL_SERVER_ERROR_DESCRIPTION, content = @Content)
+    })
+    @PatchMapping("/{order-id}/mark-delivered")
+    public ResponseEntity<OrderResponseDto> markOrderDelivered(
+            @PathVariable("order-id") Long orderId,
+            @RequestParam String securityPin) {
+        return ResponseEntity.ok(orderHandler.markOrderDelivered(orderId, securityPin));
+    }
+
 }

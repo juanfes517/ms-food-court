@@ -73,6 +73,12 @@ public class OrderHandler implements IOrderHandler {
         return new NotifyResponseDto(orderId, securityPin);
     }
 
+    @Override
+    public OrderResponseDto markOrderDelivered(Long orderId, String securityPin) {
+        Order order = orderServicePort.markOrderDelivered(orderId, securityPin);
+        return modelMapper.map(order, OrderResponseDto.class);
+    }
+
     private List<DishOrderResponseDto> saveDishOrders(List<DishRequestDto> dishes, Order savedOrder) {
         List<OrderDish> orderDishes = new ArrayList<>();
         dishes.forEach(dish -> {

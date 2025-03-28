@@ -33,4 +33,7 @@ public class OrderEntity {
 
     @Column(nullable = false, name = "restaurant_id")
     private Long restaurantId;
+
+    @Column(name = "security_pin")
+    private String securityPin;
 }
