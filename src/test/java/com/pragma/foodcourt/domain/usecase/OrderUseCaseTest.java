@@ -17,8 +17,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -394,6 +393,7 @@ class OrderUseCaseTest {
         Long employeeId = 1L;
         Long orderRestaurantId = 1L;
         Long employeeRestaurantId = 1L;
+        String restaurantName = "Restaurant Name";
 
         Order order = Order.builder()
                 .id(orderId)
@@ -407,7 +407,10 @@ class OrderUseCaseTest {
         EmployeeAssignment employeeAssignment = EmployeeAssignment.builder()
                 .id(1L)
                 .employeeId(employeeId)
-                .restaurant(Restaurant.builder().id(employeeRestaurantId).build())
+                .restaurant(Restaurant.builder()
+                        .id(employeeRestaurantId)
+                        .name(restaurantName)
+                        .build())
                 .build();
 
         when(jwtSecurityServicePort.getSubject())
@@ -420,7 +423,7 @@ class OrderUseCaseTest {
                 .thenReturn(employeeAssignment);
         when(userExternalServicePort.getCellPhoneNumberById(order.getCustomerId()))
                 .thenReturn(customerCellPhoneNumber);
-        when(smsExternalService.notifyOrderReady(eq(customerCellPhoneNumber), anyInt()))
+        when(smsExternalService.notifyOrderReady(eq(customerCellPhoneNumber), eq(restaurantName), anyString()))
                 .thenReturn(true);
 
         int result = orderUseCase.markOrderReady(orderId);
@@ -551,6 +554,7 @@ class OrderUseCaseTest {
         Long employeeId = 1L;
         Long orderRestaurantId = 1L;
         Long employeeRestaurantId = 1L;
+        String restaurantName = "Restaurant Name";
 
         Order order = Order.builder()
                 .id(orderId)
@@ -564,7 +568,10 @@ class OrderUseCaseTest {
         EmployeeAssignment employeeAssignment = EmployeeAssignment.builder()
                 .id(1L)
                 .employeeId(employeeId)
-                .restaurant(Restaurant.builder().id(employeeRestaurantId).build())
+                .restaurant(Restaurant.builder()
+                        .id(employeeRestaurantId)
+                        .name(restaurantName)
+                        .build())
                 .build();
 
         when(jwtSecurityServicePort.getSubject())
@@ -577,7 +584,7 @@ class OrderUseCaseTest {
                 .thenReturn(employeeAssignment);
         when(userExternalServicePort.getCellPhoneNumberById(order.getCustomerId()))
                 .thenReturn(customerCellPhoneNumber);
-        when(smsExternalService.notifyOrderReady(eq(customerCellPhoneNumber), anyInt()))
+        when(smsExternalService.notifyOrderReady(eq(customerCellPhoneNumber), eq(restaurantName), anyString()))
                 .thenReturn(false);
 
         NotificationFailedException result = assertThrows(NotificationFailedException.class, () ->
