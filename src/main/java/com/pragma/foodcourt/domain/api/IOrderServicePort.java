@@ -12,4 +12,6 @@ public interface IOrderServicePort {
     List<Order> getAllOrders(int page, int pageSize, OrderStatusEnum status);
 
     Order assignOrder(Long orderId);
+
+    int markOrderReady(Long orderId);
 }

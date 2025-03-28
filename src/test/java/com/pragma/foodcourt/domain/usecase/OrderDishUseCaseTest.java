@@ -49,7 +49,7 @@ class OrderDishUseCaseTest {
                 .category(new Category())
                 .description("Dish description")
                 .price(12)
-                .restaurant(new Restaurant())
+                .restaurant(Restaurant.builder().id(1L).build())
                 .imageUrl("imageUrl")
                 .active(true)
                 .build();

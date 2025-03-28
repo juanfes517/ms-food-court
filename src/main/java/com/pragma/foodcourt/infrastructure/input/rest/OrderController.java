@@ -1,6 +1,7 @@
 package com.pragma.foodcourt.infrastructure.input.rest;
 
 import com.pragma.foodcourt.application.dto.request.OrderRequestDto;
+import com.pragma.foodcourt.application.dto.response.NotifyResponseDto;
 import com.pragma.foodcourt.application.dto.response.OrderResponseDto;
 import com.pragma.foodcourt.application.dto.response.OrderWithDishesResponseDto;
 import com.pragma.foodcourt.application.handler.IOrderHandler;
@@ -64,6 +65,19 @@ public class OrderController {
     @PatchMapping("/{order-id}/assign-employee")
     public ResponseEntity<OrderResponseDto> assignOrder(@PathVariable("order-id") Long orderId) {
         return ResponseEntity.ok(orderHandler.assignOrder(orderId));
+    }
+
+    @Operation(summary = ApiConstants.MARK_ORDER_AS_READY_DESCRIPTION)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = ApiConstants.OK_DESCRIPTION, content = @Content),
+            @ApiResponse(responseCode = "400", description = ApiConstants.BAD_REQUEST_DESCRIPTION, content = @Content),
+            @ApiResponse(responseCode = "403", description = ApiConstants.FORBIDDEN_DESCRIPTION, content = @Content),
+            @ApiResponse(responseCode = "404", description = ApiConstants.NOT_FOUND_DESCRIPTION, content = @Content),
+            @ApiResponse(responseCode = "500", description = ApiConstants.INTERNAL_SERVER_ERROR_DESCRIPTION, content = @Content)
+    })
+    @PatchMapping("/{order-id}/mark-ready")
+    public ResponseEntity<NotifyResponseDto> markOrderReady(@PathVariable("order-id") Long orderId) {
+        return ResponseEntity.ok(orderHandler.markOrderReady(orderId));
     }
 
 }

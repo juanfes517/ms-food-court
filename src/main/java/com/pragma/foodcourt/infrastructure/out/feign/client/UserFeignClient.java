@@ -17,4 +17,7 @@ public interface UserFeignClient {
 
     @GetMapping("/id")
     Long getUserIdByEmail(@RequestParam String email);
+
+    @GetMapping("/{id}/cell-phone-number")
+    String getCellPhoneNumberById(@PathVariable("id") Long userId);
 }

@@ -83,4 +83,18 @@ class UserFeignAdapterTest {
         assertNotNull(userId);
         assertEquals(1L, userId);
     }
+
+    @Test
+    void getCellPhoneNumberById_WhenIsSuccessful() {
+        Long userId = 1L;
+        String email = "test@mail.com";
+
+        when(userFeignClient.getCellPhoneNumberById(userId))
+                .thenReturn(email);
+
+        String result = userFeignAdapter.getCellPhoneNumberById(userId);
+
+        assertNotNull(result);
+        assertEquals(email, result);
+    }
 }

@@ -54,7 +54,7 @@ class RestaurantUseCaseTest {
                 .ownerId(1L)
                 .build();
 
-        when(userExternalServicePort.userHasRole(restaurant.getOwnerId(), "ROLE_OWNER"))
+        when(userExternalServicePort.userHasRole(restaurant.getOwnerId(), "OWNER"))
                 .thenReturn(true);
         when(restaurantPersistencePort.save(restaurant))
                 .thenReturn(restaurantSaved);
@@ -82,7 +82,7 @@ class RestaurantUseCaseTest {
                 .ownerId(1L)
                 .build();
 
-        when(userExternalServicePort.userHasRole(restaurant.getOwnerId(), "ROLE_OWNER"))
+        when(userExternalServicePort.userHasRole(restaurant.getOwnerId(), "OWNER"))
                 .thenReturn(false);
 
         InvalidUserRoleException result = assertThrows(InvalidUserRoleException.class, () -> restaurantUseCase.saveRestaurant(restaurant));
@@ -101,7 +101,7 @@ class RestaurantUseCaseTest {
                 .ownerId(1L)
                 .build();
 
-        when(userExternalServicePort.userHasRole(restaurant.getOwnerId(), "ROLE_OWNER"))
+        when(userExternalServicePort.userHasRole(restaurant.getOwnerId(), "OWNER"))
                 .thenReturn(true);
 
         InvalidCellPhoneNumberException result = assertThrows(InvalidCellPhoneNumberException.class, () -> restaurantUseCase.saveRestaurant(restaurant));
@@ -120,7 +120,7 @@ class RestaurantUseCaseTest {
                 .ownerId(1L)
                 .build();
 
-        when(userExternalServicePort.userHasRole(restaurant.getOwnerId(), "ROLE_OWNER"))
+        when(userExternalServicePort.userHasRole(restaurant.getOwnerId(), "OWNER"))
                 .thenReturn(true);
 
         InvalidCellPhoneNumberException result = assertThrows(InvalidCellPhoneNumberException.class, () -> restaurantUseCase.saveRestaurant(restaurant));
@@ -139,7 +139,7 @@ class RestaurantUseCaseTest {
                 .ownerId(1L)
                 .build();
 
-        when(userExternalServicePort.userHasRole(restaurant.getOwnerId(), "ROLE_OWNER"))
+        when(userExternalServicePort.userHasRole(restaurant.getOwnerId(), "OWNER"))
                 .thenReturn(true);
 
         NonNumericNitException result = assertThrows(NonNumericNitException.class, () -> restaurantUseCase.saveRestaurant(restaurant));
@@ -158,7 +158,7 @@ class RestaurantUseCaseTest {
                 .ownerId(1L)
                 .build();
 
-        when(userExternalServicePort.userHasRole(restaurant.getOwnerId(), "ROLE_OWNER"))
+        when(userExternalServicePort.userHasRole(restaurant.getOwnerId(), "OWNER"))
                 .thenReturn(true);
 
         NumericNameException result = assertThrows(NumericNameException.class, () -> restaurantUseCase.saveRestaurant(restaurant));
