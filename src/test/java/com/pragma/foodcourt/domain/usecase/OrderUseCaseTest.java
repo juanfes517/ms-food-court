@@ -825,4 +825,99 @@ class OrderUseCaseTest {
 
         assertEquals(ExceptionConstants.INVALID_SECURITY_PIN_EXCEPTION, result.getMessage());
     }
+
+    @Test
+    void cancelOrder_WhenIsSuccessful() {
+        Long orderId = 1L;
+        String tokenEmail = "test@email.com";
+        Long customerId = 1L;
+
+        Order order = Order.builder()
+                .id(orderId)
+                .customerId(customerId)
+                .date(LocalDate.of(2024, 5, 17))
+                .status(OrderStatusEnum.PENDING)
+                .restaurantId(1L)
+                .build();
+
+        Order updatedOrder = Order.builder()
+                .id(orderId)
+                .customerId(customerId)
+                .date(LocalDate.of(2024, 5, 17))
+                .status(OrderStatusEnum.CANCELED)
+                .restaurantId(1L)
+                .build();
+
+        when(jwtSecurityServicePort.getSubject())
+                .thenReturn(tokenEmail);
+        when(userExternalServicePort.getUserIdByEmail(tokenEmail))
+                .thenReturn(customerId);
+        when(orderPersistencePort.findById(orderId))
+                .thenReturn(order);
+        when(orderPersistencePort.save(order))
+                .thenReturn(updatedOrder);
+
+        Order result = orderUseCase.cancelOrder(orderId);
+
+        assertNotNull(result);
+        assertEquals(updatedOrder.getId(), result.getId());
+        assertEquals(updatedOrder.getCustomerId(), result.getCustomerId());
+        assertEquals(updatedOrder.getDate(), result.getDate());
+        assertEquals(updatedOrder.getStatus(), result.getStatus());
+        assertEquals(updatedOrder.getRestaurantId(), result.getRestaurantId());
+    }
+
+    @Test
+    void cancelOrder_WhenThrowOrderNotFromCustomerException() {
+        Long orderId = 1L;
+        String tokenEmail = "test@email.com";
+        Long customerId = 1L;
+
+        Order order = Order.builder()
+                .id(orderId)
+                .customerId(2L)
+                .date(LocalDate.of(2024, 5, 17))
+                .status(OrderStatusEnum.PENDING)
+                .restaurantId(1L)
+                .build();
+
+        when(jwtSecurityServicePort.getSubject())
+                .thenReturn(tokenEmail);
+        when(userExternalServicePort.getUserIdByEmail(tokenEmail))
+                .thenReturn(customerId);
+        when(orderPersistencePort.findById(orderId))
+                .thenReturn(order);
+
+        OrderNotFromCustomerException result = assertThrows(OrderNotFromCustomerException.class, () ->
+                orderUseCase.cancelOrder(orderId));
+
+        assertEquals(ExceptionConstants.ORDER_NOT_ASSIGNED_TO_EMPLOYEE_EXCEPTION, result.getMessage());
+    }
+
+    @Test
+    void cancelOrder_WhenThrowInvalidOrderStatusException() {
+        Long orderId = 1L;
+        String tokenEmail = "test@email.com";
+        Long customerId = 1L;
+
+        Order order = Order.builder()
+                .id(orderId)
+                .customerId(customerId)
+                .date(LocalDate.of(2024, 5, 17))
+                .status(OrderStatusEnum.READY)
+                .restaurantId(1L)
+                .build();
+
+        when(jwtSecurityServicePort.getSubject())
+                .thenReturn(tokenEmail);
+        when(userExternalServicePort.getUserIdByEmail(tokenEmail))
+                .thenReturn(customerId);
+        when(orderPersistencePort.findById(orderId))
+                .thenReturn(order);
+
+        InvalidOrderStatusException result = assertThrows(InvalidOrderStatusException.class, () ->
+                orderUseCase.cancelOrder(orderId));
+
+        assertEquals(ExceptionConstants.INVALID_ORDER_STATUS_EXCEPTION, result.getMessage());
+    }
 }
