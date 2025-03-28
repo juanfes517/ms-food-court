@@ -243,4 +243,39 @@ class OrderHandlerTest {
         assertEquals(orderResponseDto.getChefId(), result.getChefId());
         assertEquals(orderResponseDto.getRestaurantId(), result.getRestaurantId());
     }
+
+    @Test
+    void cancelOrder_whenIsSuccessful() {
+        Long orderId = 1L;
+
+        Order order = Order.builder()
+                .id(orderId)
+                .customerId(1L)
+                .date(LocalDate.of(2024, 5, 17))
+                .status(OrderStatusEnum.CANCELED)
+                .restaurantId(1L)
+                .build();
+
+        OrderResponseDto orderResponseDto = OrderResponseDto.builder()
+                .id(orderId)
+                .customerId(1L)
+                .date(LocalDate.of(2024, 5, 17))
+                .status(OrderStatusEnum.CANCELED)
+                .restaurantId(1L)
+                .build();
+
+        when(orderServicePort.cancelOrder(orderId))
+                .thenReturn(order);
+        when(modelMapper.map(order, OrderResponseDto.class))
+                .thenReturn(orderResponseDto);
+
+        OrderResponseDto result = orderHandler.cancelOrder(orderId);
+
+        assertNotNull(result);
+        assertEquals(orderResponseDto.getId(), result.getId());
+        assertEquals(orderResponseDto.getCustomerId(), result.getCustomerId());
+        assertEquals(orderResponseDto.getDate(), result.getDate());
+        assertEquals(orderResponseDto.getStatus(), result.getStatus());
+        assertEquals(orderResponseDto.getRestaurantId(), result.getRestaurantId());
+    }
 }
