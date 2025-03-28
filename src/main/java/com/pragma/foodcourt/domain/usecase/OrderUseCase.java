@@ -94,6 +94,27 @@ public class OrderUseCase implements IOrderServicePort {
         return orderPersistencePort.save(order);
     }
 
+    @Override
+    public Order cancelOrder(Long orderId) {
+        String tokenEmail = jwtSecurityServicePort.getSubject();
+        Long customerId = userExternalServicePort.getUserIdByEmail(tokenEmail);
+        Order order = orderPersistencePort.findById(orderId);
+
+        this.validateCustomerIdOfTheOrder(order, customerId);
+        this.validateOrderStatus(order, OrderStatusEnum.PENDING);
+
+        order.setStatus(OrderStatusEnum.CANCELED);
+
+        return orderPersistencePort.save(order);
+    }
+
+    private void validateCustomerIdOfTheOrder(Order order, Long customerId) {
+        Long orderCustomerId = order.getCustomerId();
+        if (!orderCustomerId.equals(customerId)) {
+            throw new OrderNotFromCustomerException(ExceptionConstants.ORDER_NOT_ASSIGNED_TO_EMPLOYEE_EXCEPTION);
+        }
+    }
+
     private void validateSecurityPin(Order order, String securityPin) {
         String orderSecurityPin = order.getSecurityPin();
         if (!securityPin.equals(orderSecurityPin)) {
