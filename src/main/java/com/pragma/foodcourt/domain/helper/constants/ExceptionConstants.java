@@ -18,6 +18,7 @@ public class ExceptionConstants {
     public static final String ORDER_NOT_FROM_EMPLOYEE_RESTAURANT_EXCEPTION = "The order does not belong to the employee's restaurant";
     public static final String INVALID_ORDER_STATUS_EXCEPTION = "It is not possible to change the order status";
     public static final String ORDER_NOT_ASSIGNED_TO_EMPLOYEE_EXCEPTION = "The order was not assigned to the employee";
+    public static final String ORDER_NOT_CREATED_BY_THE_CUSTOMER = "The order was not created by the customer";
     public static final String NOTIFICATION_FAILED_EXCEPTION = "The notification delivery failed. Please check the cell phone number";
     public static final String INVALID_SECURITY_PIN_EXCEPTION = "The security PIN does not match.";
 }
