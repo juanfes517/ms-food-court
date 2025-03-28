@@ -592,4 +592,237 @@ class OrderUseCaseTest {
 
         assertEquals(ExceptionConstants.NOTIFICATION_FAILED_EXCEPTION, result.getMessage());
     }
+
+    @Test
+    void markOrderDelivered_WhenIsSuccessful() {
+        Long orderId = 1L;
+        String securityPin = "123456";
+        String tokenEmail = "test@email.com";
+        Long employeeId = 1L;
+        Long orderRestaurantId = 1L;
+        Long employeeRestaurantId = 1L;
+
+        Order order = Order.builder()
+                .id(orderId)
+                .customerId(2L)
+                .date(LocalDate.of(2024, 5, 17))
+                .status(OrderStatusEnum.READY)
+                .chefId(employeeId)
+                .restaurantId(orderRestaurantId)
+                .securityPin("123456")
+                .build();
+
+        Order updatedOrder = Order.builder()
+                .id(orderId)
+                .customerId(2L)
+                .date(LocalDate.of(2024, 5, 17))
+                .status(OrderStatusEnum.DELIVERED)
+                .chefId(employeeId)
+                .restaurantId(orderRestaurantId)
+                .securityPin("123456")
+                .build();
+
+        EmployeeAssignment employeeAssignment = EmployeeAssignment.builder()
+                .id(1L)
+                .employeeId(employeeId)
+                .restaurant(Restaurant.builder()
+                        .id(employeeRestaurantId)
+                        .name("Restaurant name")
+                        .build())
+                .build();
+
+        when(jwtSecurityServicePort.getSubject())
+                .thenReturn(tokenEmail);
+        when(userExternalServicePort.getUserIdByEmail(tokenEmail))
+                .thenReturn(employeeId);
+        when(orderPersistencePort.findById(orderId))
+                .thenReturn(order);
+        when(employeeAssignmentPersistencePort.findByEmployeeId(employeeId))
+                .thenReturn(employeeAssignment);
+        when(orderPersistencePort.save(order))
+                .thenReturn(updatedOrder);
+
+        Order result = orderUseCase.markOrderDelivered(orderId, securityPin);
+
+        assertNotNull(result);
+        assertEquals(updatedOrder.getId(), result.getId());
+        assertEquals(updatedOrder.getCustomerId(), result.getCustomerId());
+        assertEquals(updatedOrder.getDate(), result.getDate());
+        assertEquals(updatedOrder.getStatus(), result.getStatus());
+        assertEquals(updatedOrder.getChefId(), result.getChefId());
+        assertEquals(updatedOrder.getRestaurantId(), result.getRestaurantId());
+        assertEquals(updatedOrder.getSecurityPin(), result.getSecurityPin());
+    }
+
+    @Test
+    void markOrderDelivered_WhenThrowOrderNotFromEmployeeRestaurantException() {
+        Long orderId = 1L;
+        String securityPin = "123456";
+        String tokenEmail = "test@email.com";
+        Long employeeId = 1L;
+        Long orderRestaurantId = 2L;
+        Long employeeRestaurantId = 1L;
+
+        Order order = Order.builder()
+                .id(orderId)
+                .customerId(2L)
+                .date(LocalDate.of(2024, 5, 17))
+                .status(OrderStatusEnum.READY)
+                .chefId(employeeId)
+                .restaurantId(orderRestaurantId)
+                .securityPin("123456")
+                .build();
+
+        EmployeeAssignment employeeAssignment = EmployeeAssignment.builder()
+                .id(1L)
+                .employeeId(employeeId)
+                .restaurant(Restaurant.builder()
+                        .id(employeeRestaurantId)
+                        .name("Restaurant name")
+                        .build())
+                .build();
+
+        when(jwtSecurityServicePort.getSubject())
+                .thenReturn(tokenEmail);
+        when(userExternalServicePort.getUserIdByEmail(tokenEmail))
+                .thenReturn(employeeId);
+        when(orderPersistencePort.findById(orderId))
+                .thenReturn(order);
+        when(employeeAssignmentPersistencePort.findByEmployeeId(employeeId))
+                .thenReturn(employeeAssignment);
+
+        OrderNotFromEmployeeRestaurantException result = assertThrows(OrderNotFromEmployeeRestaurantException.class, () ->
+                orderUseCase.markOrderDelivered(orderId, securityPin));
+
+        assertEquals(ExceptionConstants.ORDER_NOT_FROM_EMPLOYEE_RESTAURANT_EXCEPTION, result.getMessage());
+    }
+
+    @Test
+    void markOrderDelivered_WhenThrowOrderNotAssignedToEmployeeException() {
+        Long orderId = 1L;
+        String securityPin = "123456";
+        String tokenEmail = "test@email.com";
+        Long employeeId = 1L;
+        Long orderRestaurantId = 1L;
+        Long employeeRestaurantId = 1L;
+
+        Order order = Order.builder()
+                .id(orderId)
+                .customerId(2L)
+                .date(LocalDate.of(2024, 5, 17))
+                .status(OrderStatusEnum.READY)
+                .chefId(2L)
+                .restaurantId(orderRestaurantId)
+                .securityPin("123456")
+                .build();
+
+        EmployeeAssignment employeeAssignment = EmployeeAssignment.builder()
+                .id(1L)
+                .employeeId(employeeId)
+                .restaurant(Restaurant.builder()
+                        .id(employeeRestaurantId)
+                        .name("Restaurant name")
+                        .build())
+                .build();
+
+        when(jwtSecurityServicePort.getSubject())
+                .thenReturn(tokenEmail);
+        when(userExternalServicePort.getUserIdByEmail(tokenEmail))
+                .thenReturn(employeeId);
+        when(orderPersistencePort.findById(orderId))
+                .thenReturn(order);
+        when(employeeAssignmentPersistencePort.findByEmployeeId(employeeId))
+                .thenReturn(employeeAssignment);
+
+        OrderNotAssignedToEmployeeException result = assertThrows(OrderNotAssignedToEmployeeException.class, () ->
+                orderUseCase.markOrderDelivered(orderId, securityPin));
+
+        assertEquals(ExceptionConstants.ORDER_NOT_ASSIGNED_TO_EMPLOYEE_EXCEPTION, result.getMessage());
+    }
+
+    @Test
+    void markOrderDelivered_WhenThrowInvalidOrderStatusException() {
+        Long orderId = 1L;
+        String securityPin = "123456";
+        String tokenEmail = "test@email.com";
+        Long employeeId = 1L;
+        Long orderRestaurantId = 1L;
+        Long employeeRestaurantId = 1L;
+
+        Order order = Order.builder()
+                .id(orderId)
+                .customerId(2L)
+                .date(LocalDate.of(2024, 5, 17))
+                .status(OrderStatusEnum.PENDING)
+                .chefId(employeeId)
+                .restaurantId(orderRestaurantId)
+                .securityPin("123456")
+                .build();
+
+        EmployeeAssignment employeeAssignment = EmployeeAssignment.builder()
+                .id(1L)
+                .employeeId(employeeId)
+                .restaurant(Restaurant.builder()
+                        .id(employeeRestaurantId)
+                        .name("Restaurant name")
+                        .build())
+                .build();
+
+        when(jwtSecurityServicePort.getSubject())
+                .thenReturn(tokenEmail);
+        when(userExternalServicePort.getUserIdByEmail(tokenEmail))
+                .thenReturn(employeeId);
+        when(orderPersistencePort.findById(orderId))
+                .thenReturn(order);
+        when(employeeAssignmentPersistencePort.findByEmployeeId(employeeId))
+                .thenReturn(employeeAssignment);
+
+        InvalidOrderStatusException result = assertThrows(InvalidOrderStatusException.class, () ->
+                orderUseCase.markOrderDelivered(orderId, securityPin));
+
+        assertEquals(ExceptionConstants.INVALID_ORDER_STATUS_EXCEPTION, result.getMessage());
+    }
+
+    @Test
+    void markOrderDelivered_WhenThrowInvalidSecurityPinException() {
+        Long orderId = 1L;
+        String securityPin = "123456";
+        String tokenEmail = "test@email.com";
+        Long employeeId = 1L;
+        Long orderRestaurantId = 1L;
+        Long employeeRestaurantId = 1L;
+
+        Order order = Order.builder()
+                .id(orderId)
+                .customerId(2L)
+                .date(LocalDate.of(2024, 5, 17))
+                .status(OrderStatusEnum.READY)
+                .chefId(employeeId)
+                .restaurantId(orderRestaurantId)
+                .securityPin("3232323")
+                .build();
+
+        EmployeeAssignment employeeAssignment = EmployeeAssignment.builder()
+                .id(1L)
+                .employeeId(employeeId)
+                .restaurant(Restaurant.builder()
+                        .id(employeeRestaurantId)
+                        .name("Restaurant name")
+                        .build())
+                .build();
+
+        when(jwtSecurityServicePort.getSubject())
+                .thenReturn(tokenEmail);
+        when(userExternalServicePort.getUserIdByEmail(tokenEmail))
+                .thenReturn(employeeId);
+        when(orderPersistencePort.findById(orderId))
+                .thenReturn(order);
+        when(employeeAssignmentPersistencePort.findByEmployeeId(employeeId))
+                .thenReturn(employeeAssignment);
+
+        InvalidSecurityPinException result = assertThrows(InvalidSecurityPinException.class, () ->
+                orderUseCase.markOrderDelivered(orderId, securityPin));
+
+        assertEquals(ExceptionConstants.INVALID_SECURITY_PIN_EXCEPTION, result.getMessage());
+    }
 }
