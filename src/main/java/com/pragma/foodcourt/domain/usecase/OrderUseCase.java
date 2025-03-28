@@ -6,6 +6,7 @@ import com.pragma.foodcourt.domain.helper.constants.ExceptionConstants;
 import com.pragma.foodcourt.domain.model.EmployeeAssignment;
 import com.pragma.foodcourt.domain.model.Order;
 import com.pragma.foodcourt.domain.model.OrderStatusEnum;
+import com.pragma.foodcourt.domain.model.Restaurant;
 import com.pragma.foodcourt.domain.spi.*;
 import lombok.RequiredArgsConstructor;
 
@@ -38,7 +39,7 @@ public class OrderUseCase implements IOrderServicePort {
     public List<Order> getAllOrders(int page, int pageSize, OrderStatusEnum status) {
         String tokenEmail = jwtSecurityServicePort.getSubject();
         Long employeeId = userExternalServicePort.getUserIdByEmail(tokenEmail);
-        Long restaurantId = this.findEmployeeRestaurantId(employeeId);
+        Long restaurantId = this.findEmployeeRestaurant(employeeId).getId();
 
         return orderPersistencePort.findAll(page, pageSize, status, restaurantId);
     }
@@ -64,21 +65,21 @@ public class OrderUseCase implements IOrderServicePort {
         Long employeeId = userExternalServicePort.getUserIdByEmail(tokenEmail);
         Order order = orderPersistencePort.findById(orderId);
 
-        this.validateOrderRestaurant(order, employeeId);
+        Restaurant employeRestaurant = this.validateOrderRestaurant(order, employeeId);
         this.validateOrderAssignedToChef(order, employeeId);
         this.validateOrderStatus(order, OrderStatusEnum.PREPARING);
 
         String customerCellPhoneNumber = userExternalServicePort.getCellPhoneNumberById(order.getCustomerId());
-        int securityPin = this.sendNotification(customerCellPhoneNumber);
+        int securityPin = this.sendNotification(customerCellPhoneNumber, employeRestaurant.getName());
 
         order.setStatus(OrderStatusEnum.READY);
         orderPersistencePort.save(order);
         return securityPin;
     }
 
-    private int sendNotification(String customerCellPhoneNumber) {
+    private int sendNotification(String customerCellPhoneNumber, String restaurantName) {
         int securityPin = 100000 + random.nextInt(900000);
-        boolean notifyResult = smsExternalService.notifyOrderReady(customerCellPhoneNumber, securityPin);
+        boolean notifyResult = smsExternalService.notifyOrderReady(customerCellPhoneNumber, restaurantName, String.valueOf(securityPin));
 
         if (!notifyResult) {
             throw new NotificationFailedException(ExceptionConstants.NOTIFICATION_FAILED_EXCEPTION);
@@ -101,17 +102,21 @@ public class OrderUseCase implements IOrderServicePort {
         }
     }
 
-    private void validateOrderRestaurant(Order order, Long employeeId) {
-        Long employeeRestaurantId = this.findEmployeeRestaurantId(employeeId);
+    private Restaurant validateOrderRestaurant(Order order, Long employeeId) {
+        Restaurant employeeRestaurant = this.findEmployeeRestaurant(employeeId);
+        Long employeeRestaurantId = employeeRestaurant.getId();
         Long orderRestaurantId = order.getRestaurantId();
+
         if (!orderRestaurantId.equals(employeeRestaurantId)) {
             throw new OrderNotFromEmployeeRestaurantException(ExceptionConstants.ORDER_NOT_FROM_EMPLOYEE_RESTAURANT_EXCEPTION);
         }
+
+        return employeeRestaurant;
     }
 
-    private Long findEmployeeRestaurantId(Long employeeId) {
+    private Restaurant findEmployeeRestaurant(Long employeeId) {
         EmployeeAssignment employeeAssignment = employeeAssignmentPersistencePort.findByEmployeeId(employeeId);
-        return employeeAssignment.getRestaurant().getId();
+        return employeeAssignment.getRestaurant();
     }
 
     private void validateActiveOrder(Long customerId) {
