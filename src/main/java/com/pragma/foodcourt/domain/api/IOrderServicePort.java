@@ -14,4 +14,6 @@ public interface IOrderServicePort {
     Order assignOrder(Long orderId);
 
     int markOrderReady(Long orderId);
+
+    Order markOrderDelivered(Long orderId, String securityPin);
 }

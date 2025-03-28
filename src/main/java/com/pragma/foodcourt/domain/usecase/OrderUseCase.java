@@ -72,9 +72,33 @@ public class OrderUseCase implements IOrderServicePort {
         String customerCellPhoneNumber = userExternalServicePort.getCellPhoneNumberById(order.getCustomerId());
         int securityPin = this.sendNotification(customerCellPhoneNumber, employeRestaurant.getName());
 
+        order.setSecurityPin(String.valueOf(securityPin));
         order.setStatus(OrderStatusEnum.READY);
         orderPersistencePort.save(order);
         return securityPin;
+    }
+
+    @Override
+    public Order markOrderDelivered(Long orderId, String securityPin) {
+        String tokenEmail = jwtSecurityServicePort.getSubject();
+        Long employeeId = userExternalServicePort.getUserIdByEmail(tokenEmail);
+        Order order = orderPersistencePort.findById(orderId);
+
+        this.validateOrderRestaurant(order, employeeId);
+        this.validateOrderAssignedToChef(order, employeeId);
+        this.validateOrderStatus(order, OrderStatusEnum.READY);
+        this.validateSecurityPin(order, securityPin);
+
+        order.setStatus(OrderStatusEnum.DELIVERED);
+
+        return orderPersistencePort.save(order);
+    }
+
+    private void validateSecurityPin(Order order, String securityPin) {
+        String orderSecurityPin = order.getSecurityPin();
+        if (!securityPin.equals(orderSecurityPin)) {
+            throw new InvalidSecurityPinException(ExceptionConstants.INVALID_SECURITY_PIN_EXCEPTION);
+        }
     }
 
     private int sendNotification(String customerCellPhoneNumber, String restaurantName) {

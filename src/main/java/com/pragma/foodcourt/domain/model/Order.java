@@ -17,4 +17,5 @@ public class Order {
     private OrderStatusEnum status;
     private Long chefId;
     private Long restaurantId;
+    private String securityPin;
 }
