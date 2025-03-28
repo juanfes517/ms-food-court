@@ -9,6 +9,7 @@ public class ApiConstants {
     public static final String SAVE_ORDER_DESCRIPTION = "Save a new order";
     public static final String GET_ALL_ORDER_DESCRIPTION = "Get all orders by status and restaurant id";
     public static final String ASSIGN_ORDER_DESCRIPTION = "Assign an order to an employee";
+    public static final String MARK_ORDER_AS_READY_DESCRIPTION = "Mark an order as ready";
     public static final String ASSIGN_EMPLOYEE_TO_RESTAURANT_DESCRIPTION = "Assign a new employee to a restaurant";
     public static final String GET_ALL_RESTAURANTS_DESCRIPTION = "Return all restaurants";
     public static final String GET_ALL_DISHES_DESCRIPTION = "Return all dishes from a restaurant";
@@ -20,4 +21,5 @@ public class ApiConstants {
     public static final String CONFLICT_DESCRIPTION = "Conflict occurred";
     public static final String BAD_REQUEST_DESCRIPTION = "Bad request";
     public static final String NOT_FOUND_DESCRIPTION = "Not found";
+    public static final String INTERNAL_SERVER_ERROR_DESCRIPTION = "Internal server error";
 }
