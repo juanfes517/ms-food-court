@@ -229,6 +229,16 @@ public class ControllerAdvisor {
                 .build();
     }
 
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    @ExceptionHandler(OrderNotFromCustomerException.class)
+    public ExceptionResponseDto handleOrderNotFromCustomerException(OrderNotFromCustomerException e) {
+        log.error(e.getMessage());
+        return ExceptionResponseDto.builder()
+                .message(e.getMessage())
+                .timestamp(LocalDateTime.now())
+                .build();
+    }
+
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(NotificationFailedException.class)
     public ExceptionResponseDto handleNotificationFailedException(NotificationFailedException e) {

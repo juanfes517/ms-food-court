@@ -33,8 +33,14 @@ public class SecurityConstants {
             "/api/v1/orders"
     };
 
+    private static final String[] CUSTOMER_PATCH_ENDPOINTS = {
+            "/api/v1/orders/{order-id}/cancel-order"
+    };
+
     private static final String[] EMPLOYEE_ENDPOINTS = {
-            "/api/v1/orders"
+            "/api/v1/orders/{order-id}/assign-employee",
+            "/api/v1/orders/{order-id}/mark-ready",
+            "/api/v1/orders/{order-id}/mark-delivered"
     };
 
     public static String[] getPublicEndpoints() {
@@ -55,6 +61,10 @@ public class SecurityConstants {
 
     public static String[] getCustomerGetEndpoints() {
         return CUSTOMER_GET_ENDPOINTS.clone();
+    }
+
+    public static String[] getCustomerPatchEndpoints() {
+        return CUSTOMER_PATCH_ENDPOINTS.clone();
     }
 
     public static String[] getCustomerPostEndpoints() {
