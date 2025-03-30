@@ -51,7 +51,7 @@ public class OrderUseCase implements IOrderServicePort {
         Order order = orderPersistencePort.findById(orderId);
 
         this.validateOrderRestaurant(order, employeeId);
-        this.validateOrderStatus(order, OrderStatusEnum.PENDING);
+        this.validateOrderStatus(order, OrderStatusEnum.PENDING, ExceptionConstants.PENDING_STATUS_EXCEPTION);
 
         order.setChefId(employeeId);
         order.setStatus(OrderStatusEnum.PREPARING);
@@ -67,7 +67,7 @@ public class OrderUseCase implements IOrderServicePort {
 
         Restaurant employeRestaurant = this.validateOrderRestaurant(order, employeeId);
         this.validateOrderAssignedToChef(order, employeeId);
-        this.validateOrderStatus(order, OrderStatusEnum.PREPARING);
+        this.validateOrderStatus(order, OrderStatusEnum.PREPARING, ExceptionConstants.PREPARING_STATUS_EXCEPTION);
 
         String customerCellPhoneNumber = userExternalServicePort.getCellPhoneNumberById(order.getCustomerId());
         int securityPin = this.sendNotification(customerCellPhoneNumber, employeRestaurant.getName());
@@ -86,7 +86,7 @@ public class OrderUseCase implements IOrderServicePort {
 
         this.validateOrderRestaurant(order, employeeId);
         this.validateOrderAssignedToChef(order, employeeId);
-        this.validateOrderStatus(order, OrderStatusEnum.READY);
+        this.validateOrderStatus(order, OrderStatusEnum.READY, ExceptionConstants.READY_STATUS_EXCEPTION);
         this.validateSecurityPin(order, securityPin);
 
         order.setStatus(OrderStatusEnum.DELIVERED);
@@ -101,7 +101,7 @@ public class OrderUseCase implements IOrderServicePort {
         Order order = orderPersistencePort.findById(orderId);
 
         this.validateCustomerIdOfTheOrder(order, customerId);
-        this.validateOrderStatus(order, OrderStatusEnum.PENDING);
+        this.validateOrderStatus(order, OrderStatusEnum.PENDING, ExceptionConstants.CANCEL_STATUS_EXCEPTION);
 
         order.setStatus(OrderStatusEnum.CANCELED);
 
@@ -111,7 +111,7 @@ public class OrderUseCase implements IOrderServicePort {
     private void validateCustomerIdOfTheOrder(Order order, Long customerId) {
         Long orderCustomerId = order.getCustomerId();
         if (!orderCustomerId.equals(customerId)) {
-            throw new OrderNotFromCustomerException(ExceptionConstants.ORDER_NOT_ASSIGNED_TO_EMPLOYEE_EXCEPTION);
+            throw new OrderNotFromCustomerException(ExceptionConstants.ORDER_NOT_CREATED_BY_THE_CUSTOMER);
         }
     }
 
@@ -133,10 +133,10 @@ public class OrderUseCase implements IOrderServicePort {
         return securityPin;
     }
 
-    private void validateOrderStatus(Order order, OrderStatusEnum expectedStatus) {
+    private void validateOrderStatus(Order order, OrderStatusEnum expectedStatus, String exceptionMessage) {
         OrderStatusEnum actualStatus = order.getStatus();
         if (actualStatus != expectedStatus) {
-            throw new InvalidOrderStatusException(ExceptionConstants.INVALID_ORDER_STATUS_EXCEPTION);
+            throw new InvalidOrderStatusException(exceptionMessage);
         }
     }
 

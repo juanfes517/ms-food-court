@@ -382,7 +382,7 @@ class OrderUseCaseTest {
                 orderUseCase.assignOrder(orderId));
 
         assertNotNull(result);
-        assertEquals(ExceptionConstants.INVALID_ORDER_STATUS_EXCEPTION, result.getMessage());
+        assertEquals(ExceptionConstants.PENDING_STATUS_EXCEPTION, result.getMessage());
     }
 
     @Test
@@ -543,7 +543,7 @@ class OrderUseCaseTest {
         InvalidOrderStatusException result = assertThrows(InvalidOrderStatusException.class, () ->
                 orderUseCase.markOrderReady(orderId));
 
-        assertEquals(ExceptionConstants.INVALID_ORDER_STATUS_EXCEPTION, result.getMessage());
+        assertEquals(ExceptionConstants.PREPARING_STATUS_EXCEPTION, result.getMessage());
     }
 
     @Test
@@ -780,7 +780,7 @@ class OrderUseCaseTest {
         InvalidOrderStatusException result = assertThrows(InvalidOrderStatusException.class, () ->
                 orderUseCase.markOrderDelivered(orderId, securityPin));
 
-        assertEquals(ExceptionConstants.INVALID_ORDER_STATUS_EXCEPTION, result.getMessage());
+        assertEquals(ExceptionConstants.READY_STATUS_EXCEPTION, result.getMessage());
     }
 
     @Test
@@ -891,7 +891,7 @@ class OrderUseCaseTest {
         OrderNotFromCustomerException result = assertThrows(OrderNotFromCustomerException.class, () ->
                 orderUseCase.cancelOrder(orderId));
 
-        assertEquals(ExceptionConstants.ORDER_NOT_ASSIGNED_TO_EMPLOYEE_EXCEPTION, result.getMessage());
+        assertEquals(ExceptionConstants.ORDER_NOT_CREATED_BY_THE_CUSTOMER, result.getMessage());
     }
 
     @Test
@@ -918,6 +918,6 @@ class OrderUseCaseTest {
         InvalidOrderStatusException result = assertThrows(InvalidOrderStatusException.class, () ->
                 orderUseCase.cancelOrder(orderId));
 
-        assertEquals(ExceptionConstants.INVALID_ORDER_STATUS_EXCEPTION, result.getMessage());
+        assertEquals(ExceptionConstants.CANCEL_STATUS_EXCEPTION, result.getMessage());
     }
 }
