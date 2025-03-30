@@ -11,6 +11,7 @@ public class ApiConstants {
     public static final String ASSIGN_ORDER_DESCRIPTION = "Assign an order to an employee";
     public static final String MARK_ORDER_AS_READY_DESCRIPTION = "Mark an order as ready";
     public static final String MARK_ORDER_AS_DELIVERED_DESCRIPTION = "Mark an order as delivered";
+    public static final String CANCEL_ORDER_DESCRIPTION = "Cancel an order";
     public static final String ASSIGN_EMPLOYEE_TO_RESTAURANT_DESCRIPTION = "Assign a new employee to a restaurant";
     public static final String GET_ALL_RESTAURANTS_DESCRIPTION = "Return all restaurants";
     public static final String GET_ALL_DISHES_DESCRIPTION = "Return all dishes from a restaurant";
