@@ -30,4 +30,9 @@ public class UserFeignAdapter implements IUserExternalServicePort {
     public String getCellPhoneNumberById(Long userId) {
         return userFeignClient.getCellPhoneNumberById(userId);
     }
+
+    @Override
+    public String getEmailByUserId(Long userId) {
+        return userFeignClient.getEmailByUserId(userId);
+    }
 }
