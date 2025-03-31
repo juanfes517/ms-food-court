@@ -87,12 +87,26 @@ class UserFeignAdapterTest {
     @Test
     void getCellPhoneNumberById_WhenIsSuccessful() {
         Long userId = 1L;
-        String email = "test@mail.com";
+        String cellPhoneNumber = "32323232";
 
         when(userFeignClient.getCellPhoneNumberById(userId))
-                .thenReturn(email);
+                .thenReturn(cellPhoneNumber);
 
         String result = userFeignAdapter.getCellPhoneNumberById(userId);
+
+        assertNotNull(result);
+        assertEquals(cellPhoneNumber, result);
+    }
+
+    @Test
+    void getEmailByUserId_whenIsSuccessful() {
+        Long userId = 1L;
+        String email = "test@mail.com";
+
+        when(userFeignClient.getEmailByUserId(userId))
+                .thenReturn(email);
+
+        String result = userFeignAdapter.getEmailByUserId(userId);
 
         assertNotNull(result);
         assertEquals(email, result);
