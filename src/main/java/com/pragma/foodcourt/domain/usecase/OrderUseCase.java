@@ -3,10 +3,7 @@ package com.pragma.foodcourt.domain.usecase;
 import com.pragma.foodcourt.domain.api.IOrderServicePort;
 import com.pragma.foodcourt.domain.exception.*;
 import com.pragma.foodcourt.domain.helper.constants.ExceptionConstants;
-import com.pragma.foodcourt.domain.model.EmployeeAssignment;
-import com.pragma.foodcourt.domain.model.Order;
-import com.pragma.foodcourt.domain.model.OrderStatusEnum;
-import com.pragma.foodcourt.domain.model.Restaurant;
+import com.pragma.foodcourt.domain.model.*;
 import com.pragma.foodcourt.domain.spi.*;
 import lombok.RequiredArgsConstructor;
 
@@ -21,6 +18,7 @@ public class OrderUseCase implements IOrderServicePort {
     private final IJwtSecurityServicePort jwtSecurityServicePort;
     private final IEmployeeAssignmentPersistencePort employeeAssignmentPersistencePort;
     private final ISmsExternalService smsExternalService;
+    private final ITraceabilityExternalService traceabilityExternalService;
 
     private final Random random = new Random();
 
@@ -32,7 +30,10 @@ public class OrderUseCase implements IOrderServicePort {
         this.validateActiveOrder(customerId);
         order.setCustomerId(customerId);
 
-        return orderPersistencePort.save(order);
+        Order savedOrder = orderPersistencePort.save(order);
+        this.createTraceability(savedOrder, tokenEmail, null);
+
+        return savedOrder;
     }
 
     @Override
@@ -56,6 +57,8 @@ public class OrderUseCase implements IOrderServicePort {
         order.setChefId(employeeId);
         order.setStatus(OrderStatusEnum.PREPARING);
 
+        this.createTraceability(order, employeeId, tokenEmail, OrderStatusEnum.PENDING.toString());
+
         return orderPersistencePort.save(order);
     }
 
@@ -75,6 +78,9 @@ public class OrderUseCase implements IOrderServicePort {
         order.setSecurityPin(String.valueOf(securityPin));
         order.setStatus(OrderStatusEnum.READY);
         orderPersistencePort.save(order);
+
+        this.createTraceability(order, employeeId, tokenEmail, OrderStatusEnum.PREPARING.toString());
+
         return securityPin;
     }
 
@@ -91,6 +97,8 @@ public class OrderUseCase implements IOrderServicePort {
 
         order.setStatus(OrderStatusEnum.DELIVERED);
 
+        this.createTraceability(order, employeeId, tokenEmail, OrderStatusEnum.READY.toString());
+
         return orderPersistencePort.save(order);
     }
 
@@ -104,8 +112,39 @@ public class OrderUseCase implements IOrderServicePort {
         this.validateOrderStatus(order, OrderStatusEnum.PENDING, ExceptionConstants.CANCEL_STATUS_EXCEPTION);
 
         order.setStatus(OrderStatusEnum.CANCELED);
+        this.createTraceability(order, tokenEmail, OrderStatusEnum.PENDING.toString());
 
         return orderPersistencePort.save(order);
+    }
+
+    private void createTraceability(Order order, String customerEmail, String previousStatus) {
+        CreateTraceability traceability = CreateTraceability.builder()
+                .orderId(order.getId())
+                .customerId(order.getCustomerId())
+                .customerEmail(customerEmail)
+                .previousStatus(previousStatus)
+                .newStatus(order.getStatus().toString())
+                .employeeId(null)
+                .employeeEmail(null)
+                .build();
+
+        traceabilityExternalService.createTraceability(traceability);
+    }
+
+    private void createTraceability(Order order, Long employeeId, String employeeEmail, String previousStatus) {
+        String customerEmail = userExternalServicePort.getEmailByUserId(order.getCustomerId());
+
+        CreateTraceability traceability = CreateTraceability.builder()
+                .orderId(order.getId())
+                .customerId(order.getCustomerId())
+                .customerEmail(customerEmail)
+                .previousStatus(previousStatus)
+                .newStatus(order.getStatus().toString())
+                .employeeId(employeeId)
+                .employeeEmail(employeeEmail)
+                .build();
+
+        traceabilityExternalService.createTraceability(traceability);
     }
 
     private void validateCustomerIdOfTheOrder(Order order, Long customerId) {
