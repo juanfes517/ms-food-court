@@ -41,6 +41,9 @@ class OrderUseCaseTest {
     @Mock
     private ISmsExternalService smsExternalService;
 
+    @Mock
+    private ITraceabilityExternalService traceabilityExternalService;
+
     @Test
     void placeOrder_WhenIsSuccessful() {
         String tokenEmail = "customer@email.com";
