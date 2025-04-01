@@ -2,6 +2,7 @@ package com.pragma.foodcourt.infrastructure.out.jpa.repository;
 
 import com.pragma.foodcourt.domain.model.Restaurant;
 import com.pragma.foodcourt.infrastructure.out.jpa.entity.EmployeeAssignmentEntity;
+import com.pragma.foodcourt.infrastructure.out.jpa.entity.RestaurantEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -13,5 +14,5 @@ public interface EmployeeAssignmentRepository extends JpaRepository<EmployeeAssi
 
     Optional<EmployeeAssignmentEntity> findByEmployeeId(Long employeeId);
 
-    List<EmployeeAssignmentEntity> findAllByRestaurant(Restaurant restaurant);
+    List<EmployeeAssignmentEntity> findAllByRestaurant(RestaurantEntity restaurant);
 }

@@ -1,6 +1,7 @@
 package com.pragma.foodcourt.infrastructure.input.rest;
 
 
+import com.pragma.foodcourt.application.dto.response.EmployeeEfficiencyResponseDto;
 import com.pragma.foodcourt.application.dto.response.RestaurantEfficiencyResponseDto;
 import com.pragma.foodcourt.application.dto.response.TraceabilityResponseDto;
 import com.pragma.foodcourt.application.handler.ITraceabilityHandler;
@@ -44,5 +45,15 @@ public class TraceabilityController {
     @GetMapping("/restaurant-efficiency")
     public ResponseEntity<List<RestaurantEfficiencyResponseDto>> getRestaurantEfficiency() {
         return ResponseEntity.ok(traceabilityHandler.getRestaurantEfficiency());
+    }
+
+    @Operation(summary = ApiConstants.GET_EMPLOYEE_EFFICIENCY_DESCRIPTION)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = ApiConstants.OK_DESCRIPTION, content = @Content),
+            @ApiResponse(responseCode = "403", description = ApiConstants.FORBIDDEN_DESCRIPTION, content = @Content)
+    })
+    @GetMapping("/employee-efficiency")
+    public ResponseEntity<List<EmployeeEfficiencyResponseDto>> getEmployeeEfficiency() {
+        return ResponseEntity.ok(traceabilityHandler.getEmployeeEfficiency());
     }
 }

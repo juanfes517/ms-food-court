@@ -184,7 +184,9 @@ class EmployeeAssignmentJpaAdapterTest {
 
         List<EmployeeAssignmentEntity> employeeAssignmentEntities = List.of(employeeAssignmentEntity1, employeeAssignmentEntity2);
 
-        when(employeeAssignmentRepository.findAllByRestaurant(restaurant))
+        when(modelMapper.map(restaurant, RestaurantEntity.class))
+                .thenReturn(restaurantEntity);
+        when(employeeAssignmentRepository.findAllByRestaurant(restaurantEntity))
                 .thenReturn(employeeAssignmentEntities);
         when(modelMapper.map(employeeAssignmentEntity1, EmployeeAssignment.class))
                 .thenReturn(employeeAssignment1);
