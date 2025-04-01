@@ -26,7 +26,8 @@ public class SecurityConstants {
 
     private static final String[] CUSTOMER_GET_ENDPOINTS = {
             "/api/v1/restaurants",
-            "/api/v1/dishes"
+            "/api/v1/dishes",
+            "/api/v1/traceability/order-id"
     };
 
     private static final String[] CUSTOMER_POST_ENDPOINTS = {
