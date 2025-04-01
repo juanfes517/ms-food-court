@@ -1,5 +1,6 @@
 package com.pragma.foodcourt.application.handler.impl;
 
+import com.pragma.foodcourt.application.dto.response.RestaurantEfficiencyResponseDto;
 import com.pragma.foodcourt.application.dto.response.TraceabilityResponseDto;
 import com.pragma.foodcourt.application.handler.ITraceabilityHandler;
 import com.pragma.foodcourt.domain.api.ITraceabilityServicePort;
@@ -25,5 +26,12 @@ public class TraceabilityHandler implements ITraceabilityHandler {
         return traceabilityList.stream()
                 .map(traceability -> modelMapper.map(traceability, TraceabilityResponseDto.class))
                 .toList();
+    }
+
+    @Override
+    public List<RestaurantEfficiencyResponseDto> getRestaurantEfficiency() {
+        return traceabilityServicePort.getRestaurantEfficiency().stream()
+                .map(restaurantEfficiency -> modelMapper.map(restaurantEfficiency, RestaurantEfficiencyResponseDto.class)).
+                toList();
     }
 }
