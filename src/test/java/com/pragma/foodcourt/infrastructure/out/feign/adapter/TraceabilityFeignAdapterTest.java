@@ -1,5 +1,6 @@
 package com.pragma.foodcourt.infrastructure.out.feign.adapter;
 
+import com.pragma.foodcourt.domain.model.RestaurantEfficiency;
 import com.pragma.foodcourt.domain.model.Traceability;
 import com.pragma.foodcourt.infrastructure.out.feign.client.TraceabilityFeignClient;
 import org.junit.jupiter.api.Test;
@@ -55,5 +56,36 @@ class TraceabilityFeignAdapterTest {
         assertEquals(traceability.getNewStatus(), result.get(0).getNewStatus());
         assertEquals(traceability.getEmployeeId(), result.get(0).getEmployeeId());
         assertEquals(traceability.getEmployeeEmail(), result.get(0).getEmployeeEmail());
+    }
+
+    @Test
+    void getRestaurantEfficiency_WhenIsSuccessful() {
+        List<Long> orderIds = List.of(1L, 2L);
+
+        RestaurantEfficiency restaurantEfficiency1 = RestaurantEfficiency.builder()
+                .orderId(orderIds.get(0))
+                .orderDurationInSeconds(23)
+                .finalStatus("FINAL_STATUS")
+                .build();
+
+        RestaurantEfficiency restaurantEfficiency2 = RestaurantEfficiency.builder()
+                .orderId(orderIds.get(1))
+                .orderDurationInSeconds(23)
+                .finalStatus("FINAL_STATUS")
+                .build();
+
+        List<RestaurantEfficiency> restaurantEfficiencies = List.of(restaurantEfficiency1, restaurantEfficiency2);
+
+        when(traceabilityFeignClient.getRestaurantEfficiency(orderIds))
+                .thenReturn(restaurantEfficiencies);
+
+        List<RestaurantEfficiency> result = traceabilityFeignAdapter.getRestaurantEfficiency(orderIds);
+
+        assertNotNull(result);
+        assertEquals(2, result.size());
+        assertEquals(restaurantEfficiency1.getOrderId(), result.get(0).getOrderId());
+        assertEquals(restaurantEfficiency1.getFinalStatus(), result.get(0).getFinalStatus());
+        assertEquals(restaurantEfficiency2.getOrderId(), result.get(1).getOrderId());
+        assertEquals(restaurantEfficiency2.getFinalStatus(), result.get(1).getFinalStatus());
     }
 }
