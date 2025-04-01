@@ -1,6 +1,7 @@
 package com.pragma.foodcourt.infrastructure.out.feign.client;
 
 import com.pragma.foodcourt.domain.model.CreateTraceability;
+import com.pragma.foodcourt.domain.model.RestaurantEfficiency;
 import com.pragma.foodcourt.domain.model.Traceability;
 import com.pragma.foodcourt.infrastructure.configuration.FeignClientConfiguration;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -19,4 +20,7 @@ public interface TraceabilityFeignClient {
 
     @GetMapping("/order-id")
     List<Traceability> getOrderTraceability(@RequestParam Long orderId);
+
+    @GetMapping("/restaurant-efficiency")
+    List<RestaurantEfficiency> getRestaurantEfficiency(List<Long> orderIds);
 }
