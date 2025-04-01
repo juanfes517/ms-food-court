@@ -16,7 +16,6 @@ public class ExceptionConstants {
     public static final String INVALID_DISH_QUANTITY_EXCEPTION = "The dish quantity must be a positive number greater than 0";
     public static final String INVALID_DISH_RESTAURANT_EXCEPTION = "The dish does not belong to the restaurant";
     public static final String ORDER_NOT_FROM_EMPLOYEE_RESTAURANT_EXCEPTION = "The order does not belong to the employee's restaurant";
-    public static final String INVALID_ORDER_STATUS_EXCEPTION = "It is not possible to change the order status";
     public static final String ORDER_NOT_ASSIGNED_TO_EMPLOYEE_EXCEPTION = "The order was not assigned to the employee";
 
     public static final String PENDING_STATUS_EXCEPTION = "It is only possible to assign an order when it is in PENDING status";

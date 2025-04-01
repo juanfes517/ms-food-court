@@ -20,7 +20,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/orders")
+@RequestMapping(ApiConstants.ORDER_CONTROLLER)
 public class OrderController {
 
     private final IOrderHandler orderHandler;
@@ -62,7 +62,7 @@ public class OrderController {
             @ApiResponse(responseCode = "403", description = ApiConstants.FORBIDDEN_DESCRIPTION, content = @Content),
             @ApiResponse(responseCode = "404", description = ApiConstants.NOT_FOUND_DESCRIPTION, content = @Content)
     })
-    @PatchMapping("/{order-id}/assign-employee")
+    @PatchMapping(ApiConstants.ASSIGN_ORDER_ENDPOINT)
     public ResponseEntity<OrderResponseDto> assignOrder(@PathVariable("order-id") Long orderId) {
         return ResponseEntity.ok(orderHandler.assignOrder(orderId));
     }
@@ -75,7 +75,7 @@ public class OrderController {
             @ApiResponse(responseCode = "404", description = ApiConstants.NOT_FOUND_DESCRIPTION, content = @Content),
             @ApiResponse(responseCode = "500", description = ApiConstants.INTERNAL_SERVER_ERROR_DESCRIPTION, content = @Content)
     })
-    @PatchMapping("/{order-id}/mark-ready")
+    @PatchMapping(ApiConstants.MARK_ORDER_READY_ENDPOINT)
     public ResponseEntity<NotifyResponseDto> markOrderReady(@PathVariable("order-id") Long orderId) {
         return ResponseEntity.ok(orderHandler.markOrderReady(orderId));
     }
@@ -88,10 +88,8 @@ public class OrderController {
             @ApiResponse(responseCode = "404", description = ApiConstants.NOT_FOUND_DESCRIPTION, content = @Content),
             @ApiResponse(responseCode = "500", description = ApiConstants.INTERNAL_SERVER_ERROR_DESCRIPTION, content = @Content)
     })
-    @PatchMapping("/{order-id}/mark-delivered")
-    public ResponseEntity<OrderResponseDto> markOrderDelivered(
-            @PathVariable("order-id") Long orderId,
-            @RequestParam String securityPin) {
+    @PatchMapping(ApiConstants.MARK_ORDER_DELIVERED_ENDPOINT)
+    public ResponseEntity<OrderResponseDto> markOrderDelivered(@PathVariable("order-id") Long orderId, @RequestParam String securityPin) {
         return ResponseEntity.ok(orderHandler.markOrderDelivered(orderId, securityPin));
     }
 
@@ -103,7 +101,7 @@ public class OrderController {
             @ApiResponse(responseCode = "404", description = ApiConstants.NOT_FOUND_DESCRIPTION, content = @Content),
             @ApiResponse(responseCode = "500", description = ApiConstants.INTERNAL_SERVER_ERROR_DESCRIPTION, content = @Content)
     })
-    @PatchMapping("/{order-id}/cancel-order")
+    @PatchMapping(ApiConstants.CANCEL_ORDER_ENDPOINT)
     public ResponseEntity<OrderResponseDto> markOrderDelivered(
             @PathVariable("order-id") Long orderId) {
         return ResponseEntity.ok(orderHandler.cancelOrder(orderId));
