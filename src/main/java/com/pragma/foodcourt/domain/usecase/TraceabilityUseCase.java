@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 import java.util.List;
 
 @RequiredArgsConstructor
-public class ITraceabilityUseCase implements ITraceabilityServicePort {
+public class TraceabilityUseCase implements ITraceabilityServicePort {
 
     private final ITraceabilityExternalService traceabilityExternalService;
 

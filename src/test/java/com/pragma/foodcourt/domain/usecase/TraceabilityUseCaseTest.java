@@ -15,10 +15,10 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class ITraceabilityUseCaseTest {
+class TraceabilityUseCaseTest {
 
     @InjectMocks
-    private ITraceabilityUseCase traceabilityUseCase;
+    private TraceabilityUseCase traceabilityUseCase;
 
     @Mock
     private ITraceabilityExternalService traceabilityExternalService;
