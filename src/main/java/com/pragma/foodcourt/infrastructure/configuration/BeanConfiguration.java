@@ -82,8 +82,9 @@ public class BeanConfiguration {
             IUserExternalServicePort userExternalService,
             IJwtSecurityServicePort jwtSecurityService,
             IRestaurantPersistencePort restaurantPersistencePort,
-            IOrderPersistencePort orderPersistencePort) {
+            IOrderPersistencePort orderPersistencePort,
+            IEmployeeAssignmentPersistencePort employeeAssignmentPersistencePort) {
         return new TraceabilityUseCase(traceabilityExternalService, userExternalService, jwtSecurityService,
-                restaurantPersistencePort, orderPersistencePort);
+                restaurantPersistencePort, orderPersistencePort, employeeAssignmentPersistencePort);
     }
 }
