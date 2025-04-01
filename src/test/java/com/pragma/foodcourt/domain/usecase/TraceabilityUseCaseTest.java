@@ -1,9 +1,6 @@
 package com.pragma.foodcourt.domain.usecase;
 
-import com.pragma.foodcourt.domain.model.Order;
-import com.pragma.foodcourt.domain.model.Restaurant;
-import com.pragma.foodcourt.domain.model.RestaurantEfficiency;
-import com.pragma.foodcourt.domain.model.Traceability;
+import com.pragma.foodcourt.domain.model.*;
 import com.pragma.foodcourt.domain.spi.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -37,6 +34,9 @@ class TraceabilityUseCaseTest {
 
     @Mock
     private IOrderPersistencePort orderPersistencePort;
+
+    @Mock
+    private IEmployeeAssignmentPersistencePort employeeAssignmentPersistencePort;
 
     @Test
     void getOrderTraceability_WhenIsSuccessful() {
@@ -125,5 +125,65 @@ class TraceabilityUseCaseTest {
         assertEquals(restaurantEfficiency2.getOrderId(), result.get(1).getOrderId());
         assertEquals(restaurantEfficiency1.getFinalStatus(), result.get(0).getFinalStatus());
         assertEquals(restaurantEfficiency2.getFinalStatus(), result.get(1).getFinalStatus());
+    }
+
+    @Test
+    void getEmployeeEfficiency_WhenIsSuccessful() {
+        String tokenEmail = "owner@mail.com";
+        Long ownerId = 1L;
+        Restaurant restaurant = Restaurant.builder()
+                .id(1L)
+                .build();
+
+        EmployeeAssignment employeeAssignment1 = EmployeeAssignment.builder()
+                .employeeId(101L)
+                .restaurant(restaurant)
+                .build();
+
+        EmployeeAssignment employeeAssignment2 = EmployeeAssignment.builder()
+                .employeeId(102L)
+                .restaurant(restaurant)
+                .build();
+
+        List<EmployeeAssignment> employeeAssignments = List.of(employeeAssignment1, employeeAssignment2);
+        List<Long> employeeIds = employeeAssignments.stream()
+                .map(EmployeeAssignment::getEmployeeId)
+                .toList();
+
+        EmployeeEfficiency efficiency1 = EmployeeEfficiency.builder()
+                .employeeId(101L)
+                .employeeEmail("employee1@mail.com")
+                .averageProcessingTimeInSeconds(45.5)
+                .build();
+
+        EmployeeEfficiency efficiency2 = EmployeeEfficiency.builder()
+                .employeeId(102L)
+                .employeeEmail("employee2@mail.com")
+                .averageProcessingTimeInSeconds(38.2)
+                .build();
+
+        List<EmployeeEfficiency> employeeEfficiencies = List.of(efficiency1, efficiency2);
+
+        when(jwtSecurityService.getSubject())
+                .thenReturn(tokenEmail);
+        when(userExternalService.getUserIdByEmail(tokenEmail))
+                .thenReturn(ownerId);
+        when(restaurantPersistencePort.findByOwnerId(ownerId))
+                .thenReturn(restaurant);
+        when(employeeAssignmentPersistencePort.findAllByRestaurant(restaurant))
+                .thenReturn(employeeAssignments);
+        when(traceabilityExternalService.getEmployeeEfficiency(employeeIds))
+                .thenReturn(employeeEfficiencies);
+
+        List<EmployeeEfficiency> result = traceabilityUseCase.getEmployeeEfficiency();
+
+        assertNotNull(result);
+        assertEquals(2, result.size());
+        assertEquals(efficiency1.getEmployeeId(), result.get(0).getEmployeeId());
+        assertEquals(efficiency1.getEmployeeEmail(), result.get(0).getEmployeeEmail());
+        assertEquals(efficiency1.getAverageProcessingTimeInSeconds(), result.get(0).getAverageProcessingTimeInSeconds());
+        assertEquals(efficiency2.getEmployeeId(), result.get(1).getEmployeeId());
+        assertEquals(efficiency2.getEmployeeEmail(), result.get(1).getEmployeeEmail());
+        assertEquals(efficiency2.getAverageProcessingTimeInSeconds(), result.get(1).getAverageProcessingTimeInSeconds());
     }
 }
