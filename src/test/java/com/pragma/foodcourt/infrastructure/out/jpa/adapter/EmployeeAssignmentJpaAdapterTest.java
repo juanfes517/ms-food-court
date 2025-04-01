@@ -14,6 +14,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -133,5 +134,70 @@ class EmployeeAssignmentJpaAdapterTest {
 
         assertNotNull(result);
         assertEquals(ExceptionConstants.EMPLOYEE_ASSIGNMENT_NOT_FOUND, result.getMessage());
+    }
+
+    @Test
+    void findAllByRestaurant_WhenIsSuccessful() {
+        Restaurant restaurant = Restaurant.builder()
+                .id(1L)
+                .name("Restaurant Name")
+                .nit("12344567")
+                .address("Restaurant Address")
+                .cellPhoneNumber("+573005698325")
+                .logoUrl("Restaurant Logo")
+                .ownerId(10L)
+                .build();
+
+        RestaurantEntity restaurantEntity = RestaurantEntity.builder()
+                .id(1L)
+                .name("Restaurant Name")
+                .nit("12344567")
+                .address("Restaurant Address")
+                .cellPhoneNumber("+573005698325")
+                .logoUrl("Restaurant Logo")
+                .ownerId(10L)
+                .build();
+
+        EmployeeAssignmentEntity employeeAssignmentEntity1 = EmployeeAssignmentEntity.builder()
+                .id(1L)
+                .employeeId(1L)
+                .restaurant(restaurantEntity)
+                .build();
+
+        EmployeeAssignmentEntity employeeAssignmentEntity2 = EmployeeAssignmentEntity.builder()
+                .id(2L)
+                .employeeId(2L)
+                .restaurant(restaurantEntity)
+                .build();
+
+        EmployeeAssignment employeeAssignment1 = EmployeeAssignment.builder()
+                .id(1L)
+                .employeeId(1L)
+                .restaurant(restaurant)
+                .build();
+
+        EmployeeAssignment employeeAssignment2 = EmployeeAssignment.builder()
+                .id(2L)
+                .employeeId(2L)
+                .restaurant(restaurant)
+                .build();
+
+        List<EmployeeAssignmentEntity> employeeAssignmentEntities = List.of(employeeAssignmentEntity1, employeeAssignmentEntity2);
+
+        when(employeeAssignmentRepository.findAllByRestaurant(restaurant))
+                .thenReturn(employeeAssignmentEntities);
+        when(modelMapper.map(employeeAssignmentEntity1, EmployeeAssignment.class))
+                .thenReturn(employeeAssignment1);
+        when(modelMapper.map(employeeAssignmentEntity2, EmployeeAssignment.class))
+                .thenReturn(employeeAssignment2);
+
+        List<EmployeeAssignment> result = employeeAssignmentJpaAdapter.findAllByRestaurant(restaurant);
+
+        assertNotNull(result);
+        assertEquals(employeeAssignmentEntities.size(), result.size());
+        assertEquals(employeeAssignment1.getId(), result.get(0).getId());
+        assertEquals(employeeAssignment2.getId(), result.get(1).getId());
+        assertEquals(employeeAssignment1.getEmployeeId(), result.get(0).getEmployeeId());
+        assertEquals(employeeAssignment2.getEmployeeId(), result.get(1).getEmployeeId());
     }
 }
