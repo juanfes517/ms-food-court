@@ -7,6 +7,7 @@ import com.pragma.foodcourt.domain.spi.*;
 import com.pragma.foodcourt.domain.usecase.*;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
+import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -29,6 +30,9 @@ public class BeanConfiguration {
                 skip(destination.getId());
             }
         });
+
+        modelMapper.getConfiguration()
+                .setMatchingStrategy(MatchingStrategies.STRICT);
 
         return modelMapper;
     }
@@ -70,5 +74,17 @@ public class BeanConfiguration {
             ITraceabilityExternalService traceabilityExternalService) {
         return new OrderUseCase(userExternalServicePort, orderPersistencePort, jwtSecurityServicePort,
                 employeeAssignmentPersistencePort, smsExternalService, traceabilityExternalService);
+    }
+
+    @Bean
+    public ITraceabilityServicePort traceabilityService(
+            ITraceabilityExternalService traceabilityExternalService,
+            IUserExternalServicePort userExternalService,
+            IJwtSecurityServicePort jwtSecurityService,
+            IRestaurantPersistencePort restaurantPersistencePort,
+            IOrderPersistencePort orderPersistencePort,
+            IEmployeeAssignmentPersistencePort employeeAssignmentPersistencePort) {
+        return new TraceabilityUseCase(traceabilityExternalService, userExternalService, jwtSecurityService,
+                restaurantPersistencePort, orderPersistencePort, employeeAssignmentPersistencePort);
     }
 }

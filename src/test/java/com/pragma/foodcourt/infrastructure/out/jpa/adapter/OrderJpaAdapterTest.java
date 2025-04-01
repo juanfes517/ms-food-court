@@ -235,4 +235,41 @@ class OrderJpaAdapterTest {
         assertNotNull(result);
         assertEquals(ExceptionConstants.ORDER_NOT_FOUND, result.getMessage());
     }
+
+    @Test
+    void findAllByRestaurantId_WhenIsSuccessful() {
+        Long restaurantId = 1L;
+
+        OrderEntity orderEntity = OrderEntity.builder()
+                .id(1L)
+                .customerId(1L)
+                .date(LocalDate.of(2000, 5, 17))
+                .status(OrderStatusEnum.PENDING)
+                .chefId(null)
+                .restaurantId(restaurantId)
+                .build();
+
+        Order order = Order.builder()
+                .id(1L)
+                .customerId(1L)
+                .date(LocalDate.of(2000, 5, 17))
+                .status(OrderStatusEnum.PENDING)
+                .chefId(null)
+                .restaurantId(restaurantId)
+                .build();
+
+        List<OrderEntity> orderEntities = List.of(orderEntity);
+        List<Order> orders = List.of(order);
+
+        when(orderRepository.findAllByRestaurantId(restaurantId))
+                .thenReturn(orderEntities);
+        when(modelMapper.map(orderEntity, Order.class))
+                .thenReturn(order);
+
+        List<Order> result = orderJpaAdapter.findAllByRestaurantId(restaurantId);
+
+        assertNotNull(result);
+        assertEquals(orders.size(), result.size());
+        assertEquals(orders.get(0), result.get(0));
+    }
 }
