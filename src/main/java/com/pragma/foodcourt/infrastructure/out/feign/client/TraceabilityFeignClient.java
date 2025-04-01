@@ -1,6 +1,7 @@
 package com.pragma.foodcourt.infrastructure.out.feign.client;
 
 import com.pragma.foodcourt.domain.model.CreateTraceability;
+import com.pragma.foodcourt.domain.model.EmployeeEfficiency;
 import com.pragma.foodcourt.domain.model.RestaurantEfficiency;
 import com.pragma.foodcourt.domain.model.Traceability;
 import com.pragma.foodcourt.infrastructure.configuration.FeignClientConfiguration;
@@ -23,4 +24,7 @@ public interface TraceabilityFeignClient {
 
     @GetMapping("/restaurant-efficiency")
     List<RestaurantEfficiency> getRestaurantEfficiency(@RequestParam List<Long> orderIds);
+
+    @GetMapping("/employee-efficiency")
+    List<EmployeeEfficiency> getEmployeeEfficiency(@RequestParam List<Long> employeeIds);
 }

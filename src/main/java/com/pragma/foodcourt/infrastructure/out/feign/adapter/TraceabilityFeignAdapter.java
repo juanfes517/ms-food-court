@@ -1,8 +1,6 @@
 package com.pragma.foodcourt.infrastructure.out.feign.adapter;
 
-import com.pragma.foodcourt.domain.model.CreateTraceability;
-import com.pragma.foodcourt.domain.model.RestaurantEfficiency;
-import com.pragma.foodcourt.domain.model.Traceability;
+import com.pragma.foodcourt.domain.model.*;
 import com.pragma.foodcourt.domain.spi.ITraceabilityExternalService;
 import com.pragma.foodcourt.infrastructure.out.feign.client.TraceabilityFeignClient;
 import lombok.RequiredArgsConstructor;
@@ -29,5 +27,10 @@ public class TraceabilityFeignAdapter implements ITraceabilityExternalService {
     @Override
     public List<RestaurantEfficiency> getRestaurantEfficiency(List<Long> orderIds) {
         return traceabilityFeignClient.getRestaurantEfficiency(orderIds);
+    }
+
+    @Override
+    public List<EmployeeEfficiency> getEmployeeEfficiency(List<Long> employeeIds) {
+        return traceabilityFeignClient.getEmployeeEfficiency(employeeIds);
     }
 }
