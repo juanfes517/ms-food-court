@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/restaurants")
+@RequestMapping(ApiConstants.RESTAURANT_CONTROLLER)
 public class RestaurantController {
 
     private final IRestaurantHandler restaurantHandler;

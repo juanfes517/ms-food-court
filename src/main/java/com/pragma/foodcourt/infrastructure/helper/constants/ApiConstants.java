@@ -4,6 +4,24 @@ public class ApiConstants {
 
     private ApiConstants() {}
 
+    public static final String DISH_CONTROLLER = "/api/v1/dishes";
+    public static final String UPDATE_DISH_STATUS_ENDPOINT = "/{dish-id}/status";
+
+    public static final String EMPLOYEE_ASSIGNMENT_CONTROLLER = "/api/v1/employee-assignment";
+
+    public static final String ORDER_CONTROLLER = "/api/v1/orders";
+    public static final String ASSIGN_ORDER_ENDPOINT = "/{order-id}/assign-employee";
+    public static final String MARK_ORDER_READY_ENDPOINT = "/{order-id}/mark-ready";
+    public static final String MARK_ORDER_DELIVERED_ENDPOINT = "/{order-id}/mark-delivered";
+    public static final String CANCEL_ORDER_ENDPOINT = "/{order-id}/cancel-order";
+
+    public static final String RESTAURANT_CONTROLLER = "/api/v1/restaurants";
+
+    public static final String TRACEABILITY_CONTROLLER = "/api/v1/traceability";
+    public static final String GET_ORDER_TRACEABILITY_ENDPOINT = "/order-id";
+    public static final String GET_RESTAURANT_EFFICIENCY_ENDPOINT = "/restaurant-efficiency";
+    public static final String GET_EMPLOYEE_EFFICIENCY_ENDPOINT = "/employee-efficiency";
+
     public static final String SAVE_RESTAURANT_DESCRIPTION = "Save a new restaurant";
     public static final String SAVE_DISH_DESCRIPTION = "Save a new dish";
     public static final String SAVE_ORDER_DESCRIPTION = "Save a new order";

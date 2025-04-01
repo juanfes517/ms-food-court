@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/dishes")
+@RequestMapping(ApiConstants.DISH_CONTROLLER)
 public class DishController {
 
     private final IDishHandler dishHandler;
@@ -57,7 +57,7 @@ public class DishController {
             @ApiResponse(responseCode = "200", description = ApiConstants.OK_DESCRIPTION, content = @Content),
             @ApiResponse(responseCode = "404", description = ApiConstants.NOT_FOUND_DESCRIPTION, content = @Content)
     })
-    @PatchMapping("/{dish-id}/status")
+    @PatchMapping(ApiConstants.UPDATE_DISH_STATUS_ENDPOINT)
     public ResponseEntity<DishResponseDto> updateDishStatus(@PathVariable("dish-id") Long dishId, @RequestParam boolean status) {
         return ResponseEntity.ok(dishHandler.updateDishStatus(dishId, status));
     }

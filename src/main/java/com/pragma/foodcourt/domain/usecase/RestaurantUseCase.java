@@ -21,6 +21,21 @@ public class RestaurantUseCase implements IRestaurantServicePort {
 
     @Override
     public Restaurant saveRestaurant(Restaurant restaurant) {
+        this.validateRestaurant(restaurant);
+        return restaurantPersistencePort.save(restaurant);
+    }
+
+    @Override
+    public Restaurant findRestaurantById(Long id) {
+        return restaurantPersistencePort.findById(id);
+    }
+
+    @Override
+    public Page<Restaurant> findAllRestaurants(Pageable pageable) {
+        return restaurantPersistencePort.findAll(pageable);
+    }
+
+    private void validateRestaurant(Restaurant restaurant) {
         if (!userExternalServicePort.userHasRole(restaurant.getOwnerId(), "OWNER")) {
             throw new InvalidUserRoleException(ExceptionConstants.ONLY_OWNER_EXCEPTION_MESSAGE);
         }
@@ -36,17 +51,5 @@ public class RestaurantUseCase implements IRestaurantServicePort {
         if (!restaurant.isNameNotNumeric()) {
             throw new NumericNameException(ExceptionConstants.NUMERIC_NAME_EXCEPTION_MESSAGE);
         }
-
-        return restaurantPersistencePort.save(restaurant);
-    }
-
-    @Override
-    public Restaurant findRestaurantById(Long id) {
-        return restaurantPersistencePort.findById(id);
-    }
-
-    @Override
-    public Page<Restaurant> findAllRestaurants(Pageable pageable) {
-        return restaurantPersistencePort.findAll(pageable);
     }
 }

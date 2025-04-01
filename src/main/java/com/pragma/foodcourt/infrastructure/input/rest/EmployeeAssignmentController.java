@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/employee-assignment")
+@RequestMapping(ApiConstants.EMPLOYEE_ASSIGNMENT_CONTROLLER)
 public class EmployeeAssignmentController {
 
     private final IEmployeeAssignmentHandler employeeAssignmentHandler;
