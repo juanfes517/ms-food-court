@@ -60,4 +60,12 @@ public class OrderJpaAdapter implements IOrderPersistencePort {
                 .orElseThrow(() -> new OrderNotFoundException(ExceptionConstants.ORDER_NOT_FOUND));
         return modelMapper.map(orderEntity, Order.class);
     }
+
+    @Override
+    public List<Order> findAllByRestaurantId(Long restaurantId) {
+        List<OrderEntity> orderEntities = orderRepository.findAllByRestaurantId(restaurantId);
+        return orderEntities.stream()
+                .map(orderEntity -> modelMapper.map(orderEntity, Order.class))
+                .toList();
+    }
 }
