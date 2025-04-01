@@ -22,5 +22,5 @@ public interface TraceabilityFeignClient {
     List<Traceability> getOrderTraceability(@RequestParam Long orderId);
 
     @GetMapping("/restaurant-efficiency")
-    List<RestaurantEfficiency> getRestaurantEfficiency(List<Long> orderIds);
+    List<RestaurantEfficiency> getRestaurantEfficiency(@RequestParam List<Long> orderIds);
 }
