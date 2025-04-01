@@ -77,7 +77,13 @@ public class BeanConfiguration {
     }
 
     @Bean
-    public ITraceabilityServicePort traceabilityService(ITraceabilityExternalService traceabilityExternalService) {
-        return new TraceabilityUseCase(traceabilityExternalService);
+    public ITraceabilityServicePort traceabilityService(
+            ITraceabilityExternalService traceabilityExternalService,
+            IUserExternalServicePort userExternalService,
+            IJwtSecurityServicePort jwtSecurityService,
+            IRestaurantPersistencePort restaurantPersistencePort,
+            IOrderPersistencePort orderPersistencePort) {
+        return new TraceabilityUseCase(traceabilityExternalService, userExternalService, jwtSecurityService,
+                restaurantPersistencePort, orderPersistencePort);
     }
 }
