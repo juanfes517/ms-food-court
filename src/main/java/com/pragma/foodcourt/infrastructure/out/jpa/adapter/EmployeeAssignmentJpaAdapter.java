@@ -1,6 +1,7 @@
 package com.pragma.foodcourt.infrastructure.out.jpa.adapter;
 
 import com.pragma.foodcourt.domain.model.EmployeeAssignment;
+import com.pragma.foodcourt.domain.model.Restaurant;
 import com.pragma.foodcourt.domain.spi.IEmployeeAssignmentPersistencePort;
 import com.pragma.foodcourt.infrastructure.exception.EmployeeAssignmentNotFoundException;
 import com.pragma.foodcourt.infrastructure.helper.constants.ExceptionConstants;
@@ -9,6 +10,8 @@ import com.pragma.foodcourt.infrastructure.out.jpa.repository.EmployeeAssignment
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -31,5 +34,15 @@ public class EmployeeAssignmentJpaAdapter implements IEmployeeAssignmentPersiste
                 .orElseThrow(() -> new EmployeeAssignmentNotFoundException(ExceptionConstants.EMPLOYEE_ASSIGNMENT_NOT_FOUND));
 
         return modelMapper.map(employeeAssignmentEntity, EmployeeAssignment.class);
+    }
+
+    @Override
+    public List<EmployeeAssignment> findAllByRestaurant(Restaurant restaurant) {
+        List<EmployeeAssignmentEntity> employeeAssignmentEntities = employeeAssignmentRepository.findAllByRestaurant(restaurant);
+
+        return employeeAssignmentEntities.stream()
+                .map(employeeAssignmentEntity ->
+                        modelMapper.map(employeeAssignmentEntity, EmployeeAssignment.class))
+                .toList();
     }
 }
