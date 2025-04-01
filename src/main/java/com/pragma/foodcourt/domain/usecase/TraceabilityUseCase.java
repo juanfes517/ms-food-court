@@ -1,11 +1,7 @@
 package com.pragma.foodcourt.domain.usecase;
 
-import com.pragma.foodcourt.domain.api.IRestaurantServicePort;
 import com.pragma.foodcourt.domain.api.ITraceabilityServicePort;
-import com.pragma.foodcourt.domain.model.Order;
-import com.pragma.foodcourt.domain.model.Restaurant;
-import com.pragma.foodcourt.domain.model.RestaurantEfficiency;
-import com.pragma.foodcourt.domain.model.Traceability;
+import com.pragma.foodcourt.domain.model.*;
 import com.pragma.foodcourt.domain.spi.*;
 import lombok.RequiredArgsConstructor;
 
@@ -19,6 +15,7 @@ public class TraceabilityUseCase implements ITraceabilityServicePort {
     private final IJwtSecurityServicePort jwtSecurityService;
     private final IRestaurantPersistencePort restaurantPersistencePort;
     private final IOrderPersistencePort orderPersistencePort;
+    private final IEmployeeAssignmentPersistencePort employeeAssignmentPersistencePort;
 
     @Override
     public List<Traceability> getOrderTraceability(Long orderId) {
@@ -36,5 +33,18 @@ public class TraceabilityUseCase implements ITraceabilityServicePort {
                 .toList();
 
         return traceabilityExternalService.getRestaurantEfficiency(orderIds);
+    }
+
+    @Override
+    public List<EmployeeEfficiency> getEmployeeEfficiency() {
+        String tokenEmail = jwtSecurityService.getSubject();
+        Long ownerId = userExternalService.getUserIdByEmail(tokenEmail);
+        Restaurant restaurant = restaurantPersistencePort.findByOwnerId(ownerId);
+
+        List<Long> employeeIds = employeeAssignmentPersistencePort.findAllByRestaurant(restaurant).stream()
+                .map(EmployeeAssignment::getEmployeeId)
+                .toList();
+
+        return traceabilityExternalService.getEmployeeEfficiency(employeeIds);
     }
 }
